@@ -1,0 +1,9 @@
+[flake8]
+# Some sane defaults for the code style checker flake8
+exclude =
+    .tox
+    build
+    dist
+    .eggs
+    env
+    temp

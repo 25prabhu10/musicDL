@@ -1,0 +1,18 @@
+---
+repos:
+  - repo: https://github.com/python/black.git
+    rev: 21.5b1
+    hooks:
+      - id: black
+        language_version: python3
+        exclude: ^(tests\/hooks-abort-render\/hooks|docs\/env\/temp)
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.0
+    hooks:
+      - id: fix-byte-order-marker
+      - id: check-merge-conflict
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.9.2
+    hooks:
+      - id: flake8
+        args: ["--config=.flake8"]

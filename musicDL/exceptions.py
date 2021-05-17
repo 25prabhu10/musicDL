@@ -35,3 +35,12 @@ class LogPathDoesNotExistException(MusicDLException):
     Raised when configure_logger() is passed a path to a log path, but no
     directory is found at that path.
     """
+
+
+class InvalidSaavnURLException(MusicDLException):
+    """
+    Exception for invalid saavn URL.
+
+    Raised when user passes a URL that is not a
+    valid Saavn URL.
+    """

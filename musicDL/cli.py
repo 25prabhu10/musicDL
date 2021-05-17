@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Main `musicDL` CLI."""
 import logging
 import os
 import sys
@@ -7,10 +8,9 @@ from datetime import date
 import click
 
 from musicDL import __version__
+from musicDL.config import get_config
 from musicDL.log import configure_logger
 from musicDL.main import musicDL
-import platform
-
 
 logger = logging.getLogger(__name__)
 
@@ -57,17 +57,30 @@ def version_msg():
     default=None,
     help="User configuration file (YAML format)",
 )
-def main(url, quality, log_level, debug_file, config_file):
+@click.option("--verbose", "-v", is_flag=True, help="Will print more logging messages.")
+def main(url, quality, log_level, debug_file, config_file, verbose):
     """
     Saavn download
     """
-    configure_logger(log_level, debug_file)
+    # CLI options
+    cli_config = {
+        "log-level": log_level,
+        "debug-file": debug_file,
+        "verbose": verbose,
+        "musicDL": {
+            "quality": quality,
+        },
+    }
 
-    logger.debug(f"Python version: {sys.version}")
-    logger.debug(f"Platform: {platform.platform()}")
+    # Get default or user or CLI config
+    config_dict = get_config(config_file, cli_config)
+
+    configure_logger(
+        config_dict["log-level"], config_dict["debug-file"], config_dict["verbose"]
+    )
 
     try:
-        musicDL()
+        musicDL(url, config_dict)
     except Exception as e:
         print(e)
 

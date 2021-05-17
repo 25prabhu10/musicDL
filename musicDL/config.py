@@ -5,14 +5,17 @@ import copy
 import os
 
 import yaml
-from logzero import logger as log
 
 from .exceptions import ConfigDoesNotExistException, InvalidConfiguration
 
 # Default configurations (HOW THINGS ARE)
 DEFAULT_CONFIG = {
-    "music-downloader": {
-        "track-quality": "HD",
+    "log-level": "DEBUG",
+    "debug-file": None,
+    "config-file": None,
+    "verbose": False,
+    "musicDL": {
+        "quality": "HD",
         "cover-quality": "high",  # low:150x150px or high:500x500px
         "no-metadata": False,  # don't embed metadata
         "no-cover": False,  # don't embed cover image
@@ -33,9 +36,8 @@ DEFAULT_CONFIG = {
         "podcast": False,  # mention if its from podcast
         "auto-download": False,  # download the first result
         "dry-run": False,  # get list of songs
-        "log-level": "DEBUG",  # default debug level
         "verbose": True,
-    }
+    },
 }
 
 
@@ -58,14 +60,16 @@ def merge_configs(default, overwrite):
     return new_config
 
 
-def get_config(config_path):
+def get_config(config_path, cli_config):
     """Retrieve the config from the specified path, returning a config dict."""
+    if config_path is None:
+        return merge_configs(DEFAULT_CONFIG, cli_config)
+
     if not os.path.exists(config_path):
         raise ConfigDoesNotExistException(
             "Config file {} does not exist.".format(config_path)
         )
 
-    log.debug("config_path is %s", config_path)
     with open(config_path, "r") as config_file:
         try:
             yaml_dict = yaml.safe_load(config_file)
@@ -74,6 +78,6 @@ def get_config(config_path):
                 "Unable to parse YAML file {}.".format(config_path)
             ) from e
 
-    config_dict = merge_configs(DEFAULT_CONFIG, yaml_dict)
+    file_config_dict = merge_configs(DEFAULT_CONFIG, yaml_dict)
 
-    return config_dict
+    return merge_configs(file_config_dict, cli_config)

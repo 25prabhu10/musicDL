@@ -19,7 +19,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Lois, Hal, Francis, Reese, Malcolm, Dewey and Jamie",
     author_email="",
-    url="https://github.com/hutihobake2510/MusicDL",
+    url="https://github.com/25prabhu10/musicDL",
     # Tests are included automatically:
     # https://docs.python.org/3.6/distutils/sourcedist.html#specifying-the-files-to-distribute
     packages=["musicDL"],

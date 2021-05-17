@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""All exceptions used in the Cookiecutter code base are defined here."""
+"""All exceptions used in the musicDL code base are defined here."""
 
 
 class MusicDLException(Exception):

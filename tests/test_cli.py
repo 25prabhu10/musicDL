@@ -8,7 +8,7 @@ from musicDL.__main__ import main
 
 @pytest.fixture(scope="session")
 def cli_runner():
-    """Fixture that returns a helper function to run the musicDL cli."""
+    """Fixture: That returns a helper function to run the musicDL cli."""
     runner = CliRunner()
 
     def cli_main(*cli_args, **cli_kwargs):
@@ -20,7 +20,7 @@ def cli_runner():
 
 @pytest.fixture(params=["-h", "--help"])
 def help_cli_flag(request):
-    """Pytest fixture return all help invocation options."""
+    """Fixture: Return all help invocation options."""
     return request.param
 
 
@@ -33,7 +33,7 @@ def test_cli_help(cli_runner, help_cli_flag):
 
 @pytest.fixture(params=["-V", "--version"])
 def version_cli_flag(request):
-    """Pytest fixture return both version invocation options."""
+    """Fixture: Return both version invocation options."""
     return request.param
 
 
@@ -44,17 +44,44 @@ def test_cli_version(cli_runner, version_cli_flag):
     assert result.output.startswith("musicDL")
 
 
-@pytest.mark.parametrize(
-    "url,expected",
-    [
-        ("https://www.jiosaavn.com/s/playlist/a", ""),
-        ("https://www.spotify.com/s/song/a", "Invalid Saavn URL\n"),
+@pytest.fixture(
+    params=[
+        "https://www.jiosaavn.com/song/a" "https://www.jiosaavn.com/s/playlist/a",
     ],
 )
-def test_cli_url(cli_runner, url, expected):
-    """Verify if correct URL is provided"""
+def valid_test_url(request):
+    """Fixture: That provides test URLs"""
+    return request.param
 
-    result = cli_runner(url)
+
+def test_cli_url(cli_runner, valid_test_url):
+    """Verify if correct URL is provided"""
+    result = cli_runner(valid_test_url)
 
     assert result.exit_code == 0
-    assert result.output == expected
+    assert result.output == ""
+
+
+# ("https://www.spotify.com/s/song/a", "Invalid Saavn URL\n"),
+
+
+@pytest.fixture(
+    params=[
+        "memories",
+        "https://www.spotify.com/a/album",
+        "song",
+        "https://www.youtube.com/s/song/",
+    ]
+)
+def invalid_test_url(request):
+    """Fixture: That provides invalid test URLs"""
+    return request.param
+
+
+def test_cli_url_exception(cli_runner, invalid_test_url):
+    """Test if given invalid url \
+        InvalidSaavnURLException exception is raised or not"""
+    result = cli_runner(invalid_test_url)
+
+    assert result.exit_code == 3
+    assert result.output == "Invalid Saavn URL\n"

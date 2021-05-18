@@ -83,10 +83,8 @@ def main(url, quality, log_level, debug_file, config_file, verbose):
         config_dict["log-level"], config_dict["debug-file"], config_dict["verbose"]
     )
 
-    try:
-        musicDL(url, config_dict)
-    except Exception as e:
-        print(e)
+    # Calling musicDL
+    musicDL(url, config_dict)
 
 
 if __name__ == "__main__":

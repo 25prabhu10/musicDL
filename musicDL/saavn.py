@@ -8,7 +8,7 @@ Verify URL
 import logging
 import re
 
-from .exceptions import InvalidSaavnURLException
+from musicDL.exceptions import InvalidSaavnURLException
 
 logger = logging.getLogger(__name__)
 
@@ -49,20 +49,16 @@ def identify_url(url):
     User can provide URL for a song or album or playlist.
     """
     # Check if the url is a valid Saavn URL
-    logger.info(f"URL: {url}")
+    logger.debug(f"URL: {url}")
 
     if is_valid_saavn_url(url):
         if is_song_url(url):
-            logger.info("Song URL passed")
             return "song"
 
         elif is_album_url(url):
-            logger.info("Album URL passed")
             return "album"
 
         elif is_playlist_url(url):
-            logger.info("Playlist URL passed")
             return "playlist"
 
-    logger.error(f"Invalid URL: {url}")
     raise InvalidSaavnURLException("Invalid Saavn URL")

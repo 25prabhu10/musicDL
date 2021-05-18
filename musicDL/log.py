@@ -9,8 +9,6 @@ from logging.handlers import RotatingFileHandler
 
 import appdirs
 
-from musicDL.exceptions import LogPathDoesNotExistException
-
 LOG_LEVELS = {
     "DEBUG": logging.DEBUG,
     "INFO": logging.INFO,
@@ -21,7 +19,7 @@ LOG_LEVELS = {
 
 LOG_FORMATS = {
     "DEBUG": "%(asctime)-15s - %(name)s - %(levelname)s: %(message)s",
-    "INFO": "%(asctime)s: %(message)s",
+    "INFO": "%(message)s",
     "WARNING": "%(name)s - %(levelname)s: %(message)s",
     "ERROR": "%(asctime)-15s - %(name)s - %(levelname)s: %(message)s",
     "CRITICAL": "%(asctime)-15s - %(name)s - %(levelname)s: %(message)s",
@@ -51,10 +49,6 @@ def configure_logger(log_level="DEBUG", debug_file=None, verbose=False):
         if not os.path.exists(user_log_dir):
             os.mkdir(user_log_dir)
         debug_file = os.path.join(user_log_dir, "musicDL.log")
-    elif not os.path.exists(debug_file):
-        raise LogPathDoesNotExistException(
-            "Log file {} does not exist.".format(debug_file)
-        )
 
     # Create a file handler if a log file is provided
     debug_formatter = logging.Formatter(LOG_FORMATS[log_level], "%Y-%m-%d %H:%M:%S")

@@ -1,1 +1,2 @@
-"""musicDL integration tests."""
+#!/usr/bin/env python
+"""musicDL unit tests."""

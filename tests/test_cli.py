@@ -1,8 +1,8 @@
+#!/usr/bin/env python
 """Collection of tests around musicDL's command-line interface."""
 
 import pytest
 from click.testing import CliRunner
-
 from musicDL.__main__ import main
 
 
@@ -18,6 +18,19 @@ def cli_runner():
     return cli_main
 
 
+@pytest.fixture(params=["-h", "--help"])
+def help_cli_flag(request):
+    """Pytest fixture return all help invocation options."""
+    return request.param
+
+
+def test_cli_help(cli_runner, help_cli_flag):
+    """Test cli invocation display help message with `help` flag."""
+    result = cli_runner(help_cli_flag)
+    assert result.exit_code == 0
+    assert result.output.startswith("Usage")
+
+
 @pytest.fixture(params=["-V", "--version"])
 def version_cli_flag(request):
     """Pytest fixture return both version invocation options."""
@@ -31,14 +44,17 @@ def test_cli_version(cli_runner, version_cli_flag):
     assert result.output.startswith("musicDL")
 
 
-@pytest.fixture(params=["-h", "--help"])
-def help_cli_flag(request):
-    """Pytest fixture return all help invocation options."""
-    return request.param
+@pytest.mark.parametrize(
+    "url,expected",
+    [
+        ("https://www.jiosaavn.com/s/playlist/a", ""),
+        ("https://www.spotify.com/s/song/a", "Invalid Saavn URL\n"),
+    ],
+)
+def test_cli_url(cli_runner, url, expected):
+    """Verify if correct URL is provided"""
 
+    result = cli_runner(url)
 
-def test_cli_help(cli_runner, help_cli_flag):
-    """Test cli invocation display help message with `help` flag."""
-    result = cli_runner(help_cli_flag)
     assert result.exit_code == 0
-    assert result.output.startswith("Usage")
+    assert result.output == expected

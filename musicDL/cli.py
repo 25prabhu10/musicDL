@@ -32,29 +32,33 @@ def version_msg():
     "--quality",
     # metavar="",
     default="high",
+    show_default=True,
     type=click.Choice(["low", "medium", "high", "hd"], case_sensitive=False),
-    help="""
-    Audio Quality: low:96kbps, medium:128kbps, high:160kbps, or HD:320kbps
-    """,
+    metavar="",
+    help="Audio Quality: low:96kbps, medium:128kbps, high:160kbps, or HD:320kbps",
 )
 @click.option(
     "--log-level",
     default="debug",
+    show_default=True,
     type=click.Choice(
         ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], case_sensitive=False
     ),
+    metavar="",
     help="Set log verbosity",
 )
 @click.option(
     "--debug-file",
     default=None,
     type=click.Path(),
+    metavar="",
     help="File to be used as a stream for DEBUG logging",
 )
 @click.option(
     "--config-file",
-    type=click.Path(),
     default=None,
+    type=click.Path(),
+    metavar="",
     help="User configuration file (YAML format)",
 )
 @click.option("--verbose", "-v", is_flag=True, help="Will print more logging messages.")

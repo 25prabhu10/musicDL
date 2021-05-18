@@ -6,7 +6,7 @@ import os
 
 import yaml
 
-from .exceptions import ConfigDoesNotExistException, InvalidConfiguration
+from musicDL.exceptions import ConfigDoesNotExistException, InvalidConfiguration
 
 # Default configurations (HOW THINGS ARE)
 DEFAULT_CONFIG = {
@@ -14,30 +14,7 @@ DEFAULT_CONFIG = {
     "debug-file": None,
     "config-file": None,
     "verbose": False,
-    "musicDL": {
-        "quality": "HD",
-        "cover-quality": "high",  # low:150x150px or high:500x500px
-        "no-metadata": False,  # don't embed metadata
-        "no-cover": False,  # don't embed cover image
-        "no-lyrics": False,  # don't download and embed lyrics (split)
-        "no-fallback-metadata": False,
-        "output-ext": None,  # output file format: mp3, m4a, etc..
-        # use avconv for conversion (otherwise defaults to ffmpeg)
-        "avconv": False,
-        "trim-silence": False,
-        # "folder": internals.get_music_dir(),  # download-folder
-        "file-format": "{track_name} - {album}",  # music file name format
-        "no-spaces": False,  # file should contain space or not
-        "overwrite": "prompt",  # what to do when file exists
-        "write-to": None,  # save urls to thisfile
-        "write-successful": None,
-        "skip": None,  # skip if file already downloaded
-        "search-format": "{artist} - {track_name} lyrics",
-        "podcast": False,  # mention if its from podcast
-        "auto-download": False,  # download the first result
-        "dry-run": False,  # get list of songs
-        "verbose": True,
-    },
+    "musicDL": {"quality": "HD"},
 }
 
 

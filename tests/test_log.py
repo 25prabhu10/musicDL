@@ -9,7 +9,7 @@ from musicDL.log import configure_logger
 
 
 def create_log_records():
-    """Test function, create log entries in expected stage of test."""
+    """Test function, creates log entries in expected stage of test."""
     musicDL_logger = logging.getLogger("musicDL")
     main = logging.getLogger("musicDL.main")
 
@@ -24,7 +24,7 @@ def create_log_records():
 
 @pytest.fixture
 def info_messages():
-    """Fixture: List of test info messages."""
+    """Fixture: That returns a list of test info messages."""
     return [
         "Welcome to musicDL",
         "Loading user config from home dir",
@@ -34,8 +34,8 @@ def info_messages():
 
 @pytest.fixture
 def info_logger():
-    """Fixture: Call musicDL logger setup in verbose mode."""
-    return configure_logger(verbose=True)
+    """Fixture: That calls musicDL logger setup in verbose mode."""
+    return configure_logger(log_level="DEBUG", debug_file="", verbose=True)
 
 
 def test_info_stdout_logging(caplog, info_logger, info_messages):
@@ -57,14 +57,14 @@ def test_info_stdout_logging(caplog, info_logger, info_messages):
 
 @pytest.fixture
 def debug_file(tmp_path):
-    """Fixture: Generate debug file location for tests."""
+    """Fixture: That returns debug file location for tests."""
     return tmp_path.joinpath("pytest-plugin.log")
 
 
 @pytest.fixture
 def info_logger_with_file(debug_file):
-    """Fixture: Call musicDL logger setup with `info` info level + `file`."""
-    return configure_logger(log_level="INFO", debug_file=str(debug_file))
+    """Fixture: That calls musicDL logger setup with `info` info level + `file`."""
+    return configure_logger(log_level="INFO", debug_file=str(debug_file), verbose=False)
 
 
 def test_debug_file_logging(caplog, info_logger_with_file, debug_file, info_messages):
@@ -86,7 +86,7 @@ def test_debug_file_logging(caplog, info_logger_with_file, debug_file, info_mess
 
 @pytest.fixture
 def info_logger_with_file_and_stream(debug_file):
-    """Fixture: Call musicDL logger setup with `info` info level + `file`, \
+    """Fixture: That calls musicDL logger setup with `info` level + `file`, \
         and stdout logs."""
     return configure_logger(log_level="INFO", debug_file=str(debug_file), verbose=True)
 
@@ -94,7 +94,7 @@ def info_logger_with_file_and_stream(debug_file):
 def test_debug_file_and_stream_logging(
     caplog, info_logger_with_file_and_stream, debug_file, info_messages
 ):
-    """Test that logging to stdout and file uses info format and level."""
+    """Test that logging to stdout and file uses info format and info level."""
     [file_handler, stream_handler] = info_logger_with_file_and_stream.handlers
     assert isinstance(file_handler, logging.FileHandler)
     assert isinstance(stream_handler, logging.StreamHandler)
@@ -120,13 +120,13 @@ def test_debug_file_and_stream_logging(
 
 @pytest.fixture
 def info_logger_with_default_file(mocker, tmpdir_factory):
-    """Fixture: Call musicDL logger setup with `info` info level \
+    """Fixture: That calls musicDL logger setup with `info` info level \
         + default log `file`."""
     # Use temp-log as default user log path
     tmp_dir = str(Path(tmpdir_factory.mktemp("temp-log"), "temp-log"))
 
     mocker.patch("musicDL.log.appdirs.user_log_dir", return_value=tmp_dir)
-    return configure_logger(log_level="INFO", debug_file=None)
+    return configure_logger(log_level="INFO", debug_file="", verbose=False)
 
 
 def test_default_debug_file_logging(

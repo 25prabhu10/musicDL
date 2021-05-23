@@ -3,13 +3,12 @@
 
 import pytest
 from musicDL.saavn import (
-    identify_url,
+    parse_url,
     is_album_url,
     is_playlist_url,
     is_song_url,
     is_valid_saavn_url,
 )
-from musicDL.exceptions import InvalidSaavnURLException
 
 
 @pytest.mark.parametrize(
@@ -85,9 +84,9 @@ def test_is_playlist_url(test_url, expected):
         ("https://www.jiosaavn.com/s/playlist/a", "playlist"),
     ],
 )
-def test_identify_url(test_url, expected):
+def test_parse_url(test_url, expected):
     """Test if given url is of song/album/playlist"""
-    assert identify_url(test_url) == expected
+    assert parse_url(test_url) == expected
 
 
 @pytest.fixture(
@@ -99,15 +98,15 @@ def test_identify_url(test_url, expected):
     ]
 )
 def invalid_test_url(request):
-    """Fixture: That provides invalid test URLs"""
+    """Fixture: That returns invalid test URLs"""
     return request.param
 
 
-def test_identify_url_exceptions(invalid_test_url):
+def test_parse_url_exceptions(invalid_test_url):
     """Test if given invalid url \
         InvalidSaavnURLException exception is raised or not"""
-    with pytest.raises(InvalidSaavnURLException) as e:
-        assert identify_url(invalid_test_url)
+    with pytest.raises(TypeError) as e:
+        assert parse_url(invalid_test_url)
 
     # Check for exception message
-    assert str(e.value) == "Invalid Saavn URL"
+    assert str(e.value) == "Invalid Saavn URL passed"

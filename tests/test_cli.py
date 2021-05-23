@@ -20,7 +20,7 @@ def cli_runner():
 
 @pytest.fixture(params=["-h", "--help"])
 def help_cli_flag(request):
-    """Fixture: Return all help invocation options."""
+    """Fixture: That returns all help invocation options."""
     return request.param
 
 
@@ -33,36 +33,30 @@ def test_cli_help(cli_runner, help_cli_flag):
 
 @pytest.fixture(params=["-V", "--version"])
 def version_cli_flag(request):
-    """Fixture: Return both version invocation options."""
+    """Fixture: That return both version invocation options."""
     return request.param
 
 
 def test_cli_version(cli_runner, version_cli_flag):
-    """Verify correct version output by `musicDL` on cli invocation."""
+    """Test correct version output by `musicDL` on cli invocation."""
     result = cli_runner(version_cli_flag)
     assert result.exit_code == 0
     assert result.output.startswith("musicDL")
 
 
-@pytest.fixture(
-    params=[
-        "https://www.jiosaavn.com/song/a" "https://www.jiosaavn.com/s/playlist/a",
+@pytest.mark.parametrize(
+    "test_url,expected",
+    [
+        ("https://www.jiosaavn.com/song/a", "Fetching Song...\n"),
+        ("https://www.jiosaavn.com/s/playlist/a", "Fetching Playlist...\n"),
     ],
 )
-def valid_test_url(request):
-    """Fixture: That provides test URLs"""
-    return request.param
-
-
-def test_cli_url(cli_runner, valid_test_url):
-    """Verify if correct URL is provided"""
-    result = cli_runner(valid_test_url)
+def test_cli_url(cli_runner, test_url, expected):
+    """Test if correct URL is provided"""
+    result = cli_runner(test_url)
 
     assert result.exit_code == 0
-    assert result.output == ""
-
-
-# ("https://www.spotify.com/s/song/a", "Invalid Saavn URL\n"),
+    assert result.output == expected
 
 
 @pytest.fixture(
@@ -79,9 +73,8 @@ def invalid_test_url(request):
 
 
 def test_cli_url_exception(cli_runner, invalid_test_url):
-    """Test if given invalid url \
-        InvalidSaavnURLException exception is raised or not"""
+    """Test if given invalid url program exist with code 3"""
     result = cli_runner(invalid_test_url)
 
     assert result.exit_code == 3
-    assert result.output == "Invalid Saavn URL\n"
+    assert result.output == "Invalid Saavn URL passed\n"

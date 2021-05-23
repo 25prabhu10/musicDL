@@ -9,29 +9,26 @@ from logging.handlers import RotatingFileHandler
 
 import appdirs
 
-LOG_LEVELS = {
-    "DEBUG": logging.DEBUG,
-    "INFO": logging.INFO,
-    "WARNING": logging.WARNING,
-    "ERROR": logging.ERROR,
-    "CRITICAL": logging.CRITICAL,
-}
-
-LOG_FORMATS = {
-    "DEBUG": "%(asctime)-15s - %(name)s - %(levelname)s: %(message)s",
-    "INFO": "%(message)s",
-    "WARNING": "%(name)s - %(levelname)s: %(message)s",
-    "ERROR": "%(asctime)-15s - %(name)s - %(levelname)s: %(message)s",
-    "CRITICAL": "%(asctime)-15s - %(name)s - %(levelname)s: %(message)s",
-}
+from .constants import LOG_FORMATS, LOG_LEVELS
 
 
-def configure_logger(log_level="DEBUG", debug_file=None, verbose=False):
-    """Configure logging for musicDL.
+def configure_logger(log_level: str, debug_file: str, verbose: bool) -> logging.Logger:
+    """Configures logging for musicDL.
 
-    Set up logging to debug file with given level.
-    If ``debug_file`` is given set up logging to file with DEBUG level.
+    Set up logging to debug file with given level and add stream logging
+    with user provided verbosity.
+    If `debug_file` is given set up logging to file with DEBUG level.
+
+    Args:
+        log_level: Logging level for the debug file.
+        debug_file: Path to the loging file.
+        verbose: Logging level for the stream logger.
+
+    Returns:
+        A `loggin.Logger` that is an instance of logging.Logger class.
     """
+
+    # Default logging level for stream handler
     STREAM_LOG_LEVEL = "INFO"
 
     # Set up 'musicDL' logger
@@ -43,14 +40,14 @@ def configure_logger(log_level="DEBUG", debug_file=None, verbose=False):
     del logger.handlers[:]
 
     # Create a file handler if a log file is provided
-    if debug_file is None:
+    if not debug_file:
         # Get default log path if user dose not provide one
         user_log_dir = appdirs.user_log_dir()
         if not os.path.exists(user_log_dir):
             os.mkdir(user_log_dir)
         debug_file = os.path.join(user_log_dir, "musicDL.log")
 
-    # Create a file handler if a log file is provided
+    # Create a file handler
     debug_formatter = logging.Formatter(LOG_FORMATS[log_level], "%Y-%m-%d %H:%M:%S")
     file_handler = RotatingFileHandler(debug_file, maxBytes=25000, backupCount=10)
     file_handler.setLevel(LOG_LEVELS[log_level])

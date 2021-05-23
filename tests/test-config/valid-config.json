@@ -1,0 +1,7 @@
+{
+  "config-file": "",
+  "debug-file": "",
+  "log-level": "DEBUG",
+  "musicDL": { "quality": "low" },
+  "verbose": true
+}

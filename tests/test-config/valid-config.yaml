@@ -1,6 +1,0 @@
-config-file: null
-debug-file: null
-log-level: DEBUG
-musicDL:
-  quality: HD
-verbose: false

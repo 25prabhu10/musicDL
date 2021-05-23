@@ -1,60 +1,46 @@
 #!/usr/bin/env python
 """Global configuration handling."""
 
-import copy
-import os
 
-import yaml
+import json
+import sys
+from typing import Any  # For static type checking
 
-from musicDL.exceptions import ConfigDoesNotExistException, InvalidConfiguration
-
-# Default configurations (HOW THINGS ARE)
-DEFAULT_CONFIG = {
-    "log-level": "DEBUG",
-    "debug-file": None,
-    "config-file": None,
-    "verbose": False,
-    "musicDL": {"quality": "HD"},
-}
+from .constants import DEFAULT_CONFIG
+from .utils import merge_dicts
 
 
-def merge_configs(default, overwrite):
-    """Recursively update a dict with the key/value pair of another.
+def get_config(config_path: str, cli_config: dict[str, Any]) -> dict[str, Any]:
+    """Returns config after merging configs.
 
-    Dict values that are dictionaries themselves will be updated, whilst
-    preserving existing keys.
+    Merges default configurations with user configurations
+    and then merge the result with the CLI options.
+
+    Args:
+        config_path: Path of the config file.
+        cli_config: A dict containing the CLI options provided by the user.
+
+    Returns:
+        A dict formed by merging all the default configurations,
+        user defined file configurations, and user provided CLI options.
+
+    Raises:
+        JSONDecodeError: An error occurred decoding config file.
     """
-    new_config = copy.deepcopy(default)
 
-    for k, v in overwrite.items():
-        # Make sure to preserve existing items in
-        # nested dicts, for example `abbreviations`
-        if isinstance(v, dict):
-            new_config[k] = merge_configs(default.get(k, {}), v)
-        else:
-            new_config[k] = v
-
-    return new_config
-
-
-def get_config(config_path, cli_config):
-    """Retrieve the config from the specified path, returning a config dict."""
-    if config_path is None:
-        return merge_configs(DEFAULT_CONFIG, cli_config)
-
-    if not os.path.exists(config_path):
-        raise ConfigDoesNotExistException(
-            "Config file {} does not exist.".format(config_path)
-        )
+    # Use default configurations if no config path is provided
+    if not config_path:
+        return merge_dicts(DEFAULT_CONFIG, cli_config)
 
     with open(config_path, "r") as config_file:
         try:
-            yaml_dict = yaml.safe_load(config_file)
-        except yaml.YAMLError as e:
-            raise InvalidConfiguration(
-                "Unable to parse YAML file {}.".format(config_path)
-            ) from e
+            json_dict = json.loads(config_file.read())
+        except json.JSONDecodeError as e:
+            print(f"{e.msg}\nUnable to parse JSON file: {config_path}")
+            sys.exit(3)
 
-    file_config_dict = merge_configs(DEFAULT_CONFIG, yaml_dict)
+    # Merge user file configuration with default configurations
+    file_config_dict = merge_dicts(DEFAULT_CONFIG, json_dict)
 
-    return merge_configs(file_config_dict, cli_config)
+    # Merge user configuration with CLI options
+    return merge_dicts(file_config_dict, cli_config)

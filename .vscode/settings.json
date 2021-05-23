@@ -1,8 +1,18 @@
 {
-    "python.formatting.provider": "black",
-    "python.linting.enabled": true,
-    "python.linting.flake8Enabled": true,
-    "python.testing.unittestEnabled": false,
-    "python.testing.nosetestsEnabled": false,
-    "python.testing.pytestEnabled": true
+  "python.formatting.provider": "black",
+  "python.linting.enabled": true,
+  "python.linting.flake8Enabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.nosetestsEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "files.watcherExclude": {
+    "**/.mypy_cache/**": true,
+    "**/.pytest_cache/**": true,
+    "**/.tox/**": true,
+    "**/build/**": true,
+    "**/musicDL.egg-info/**": true,
+    "**/temp/**": true,
+    "**/venv/**": true
+  },
+  "prettier.singleQuote": true
 }

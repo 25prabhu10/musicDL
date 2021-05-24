@@ -8,7 +8,7 @@ Using requests module.
 import json
 import logging
 import re
-from typing import Any, Optional, Union  # For static type checking
+from typing import Any  # For static type checking
 
 import requests
 from bs4 import BeautifulSoup
@@ -23,20 +23,19 @@ def _get_headers() -> dict[str, str]:
     Returns:
         A dict containing fake headers
     """
+
     headers = {
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Accept-Charset": "UTF-8,*;q=0.5",
         "Accept-Encoding": "gzip,deflate,sdch",
         "Accept-Language": "en-US,en;q=0.8",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.74 Safari/537.36 Edg/79.0.309.43",  # noqa
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.74 Safari/537.36 Edg/79.0.309.43",
     }
 
     return headers
 
 
-def http_get(
-    url: str, stream: bool = False
-) -> Optional[Union[bytes, requests.Response]]:
+def http_get(url: str, stream: bool = False) -> Any:
     """Gets the content of a URL via sending a HTTP GET request.
 
     Args:
@@ -66,7 +65,8 @@ def http_get(
 
     except RequestException as e:
         logger.exception(e)
-        return None
+
+    return None
 
 
 def get_json_data_from_website(url: str) -> dict[str, Any]:

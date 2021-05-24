@@ -11,6 +11,7 @@ from typing import Any  # For static type checking
 
 from .handle_requests import get_json_data_from_api, get_json_data_from_website
 from .saavn import extract_saavn_api_url, parse_url
+from .SongObj import SongObj
 
 logger = logging.getLogger(__name__)
 
@@ -36,9 +37,12 @@ def musicDL(url: str, config: dict[str, Any]) -> None:
         api_url = extract_saavn_api_url(url_type, raw_json_data)
 
         # Get the songs data from the API
-        songs_dict = get_json_data_from_api(api_url)
+        raw_songs_dict = get_json_data_from_api(api_url)
 
-        print(songs_dict)
+        # Get songObj list and tracking file name
+        [songs_dict, tracking_file_path] = SongObj.from_raw_dict(
+            raw_songs_dict, url_type, config["musicDL"]
+        )
 
         sys.exit(0)
     except Exception as e:

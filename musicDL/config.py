@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """Global configuration handling."""
 
-
 import json
 import sys
 from typing import Any  # For static type checking

@@ -20,4 +20,4 @@ the song/playlist/album. This file is cleaned up on successful download.
 Failed files are cleaned up on download failure.
 """
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"

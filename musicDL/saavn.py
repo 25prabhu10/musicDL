@@ -76,7 +76,7 @@ def parse_url(url: str) -> str:
 
 
 def extract_saavn_api_url(type_of_request: str, raw_json_data: dict[str, Any]) -> str:
-    """Creates and returns saanv API URL from json data.
+    """Creates and returns Saavn API URL from json data.
 
     Args:
         type_of_data: Type of the user passed:

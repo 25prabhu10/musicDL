@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Main `musicDL` CLI."""
+
 import logging
 import os
 import sys
@@ -40,11 +41,11 @@ def version_msg() -> str:
 @click.option(
     "-q",
     "--quality",
-    default="high",
+    default="hd",
     show_default=True,
     type=click.Choice(["low", "medium", "high", "hd"], case_sensitive=False),
     metavar="",
-    help="Audio Quality: low:96kbps, medium:128kbps, high:160kbps, or HD:320kbps",
+    help="Audio Quality: low:96kbps, medium:128kbps, high:160kbps, or hd:320kbps",
 )
 @click.option(
     "-o",

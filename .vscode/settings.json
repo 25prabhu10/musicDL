@@ -14,5 +14,8 @@
     "**/temp/**": true,
     "**/venv/**": true
   },
-  "prettier.singleQuote": true
+  "prettier.singleQuote": true,
+  "cSpell.words": [
+    "Saavn"
+  ]
 }

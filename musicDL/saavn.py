@@ -7,6 +7,7 @@ Validate the URL.
 
 import logging
 import re
+from typing import Any  # For static type checking
 
 logger = logging.getLogger(__name__)
 
@@ -71,4 +72,46 @@ def parse_url(url: str) -> str:
         elif is_playlist_url(url):
             return "playlist"
 
-    raise TypeError("Invalid Saavn URL passed")
+    raise TypeError("Invalid Saavn URL passed!!!")
+
+
+def extract_saavn_api_url(type_of_request: str, raw_json_data: dict[str, Any]) -> str:
+    """Creates and returns saanv API URL from json data.
+
+    Args:
+        type_of_data: Type of the user passed:
+                        - song
+                        - album
+                        - playlist
+        raw_json_data: A dict containing information of
+            the saavn entity.
+
+    Returns:
+        A string containing API URL.
+
+    Raises:
+        ValueError: An error occurred extracting API URL.
+    """
+
+    url = ""
+
+    # Extract API URL based on the type of request
+    if type_of_request == "song":
+        _id = raw_json_data["song"]["song"]["id"]
+        logger.debug(f"Song ID: {_id}")
+        url = f"https://www.jiosaavn.com/api.php?__call=song.getDetails&cc=in&_marker=0%3F_marker%3D0&_format=json&pids={_id}"
+
+    elif type_of_request == "album":
+        _id = raw_json_data["albumView"]["album"]["id"]
+        logger.debug(f"Album ID: {_id}")
+        url = f"https://www.jiosaavn.com/api.php?_format=json&__call=content.getAlbumDetails&albumid={_id}"
+
+    elif type_of_request == "playlist":
+        _id = raw_json_data["playlist"]["playlist"]["id"]
+        logger.debug(f"Playlist ID: {_id}")
+        url = f"https://www.jiosaavn.com/api.php?listid={_id}&_format=json&__call=playlist.getDetails"
+
+    if url:
+        return url
+
+    raise ValueError("Failed to extract API URL!!!")

@@ -109,4 +109,4 @@ def test_parse_url_exceptions(invalid_test_url):
         assert parse_url(invalid_test_url)
 
     # Check for exception message
-    assert str(e.value) == "Invalid Saavn URL passed"
+    assert str(e.value) == "Invalid Saavn URL passed!!!"

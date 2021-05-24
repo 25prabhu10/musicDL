@@ -71,7 +71,7 @@ class SongObj:
             song_obj_list = raw_json_dict["songs"]
             tracking_file_path = raw_json_dict["listid"]
 
-        tracking_file_path = slugify(text=tracking_file_path)
+        tracking_file_path = slugify(text=tracking_file_path, max_length=150)
 
         total_tracks = len(song_obj_list)
 

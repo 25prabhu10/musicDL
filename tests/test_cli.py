@@ -51,8 +51,14 @@ def test_cli_version(cli_runner, version_cli_flag):
         ("https://www.jiosaavn.com/s/playlist/a", "Fetching Playlist...\n"),
     ],
 )
-def test_cli_url(cli_runner, test_url, expected):
+def test_cli_url(cli_runner, test_url, expected, mocker):
     """Test if correct URL is provided"""
+    mocker.patch("musicDL.main.get_json_data_from_website", return_value={})
+    mocker.patch("musicDL.main.extract_saavn_api_url", return_value="")
+    mocker.patch("musicDL.main.get_json_data_from_api", return_value={})
+    mocker.patch("musicDL.main.SongObj.from_raw_dict", return_value=({}, ""))
+    mocker.patch("musicDL.main.DownloadManager.download_songs", return_value="")
+
     result = cli_runner(test_url)
 
     assert result.exit_code == 0
@@ -67,8 +73,13 @@ def test_cli_url(cli_runner, test_url, expected):
         "https://www.youtube.com/s/song/",
     ]
 )
-def invalid_test_url(request):
+def invalid_test_url(request, mocker):
     """Fixture: That provides invalid test URLs"""
+    mocker.patch("musicDL.main.get_json_data_from_website", return_value={})
+    mocker.patch("musicDL.main.extract_saavn_api_url", return_value="")
+    mocker.patch("musicDL.main.get_json_data_from_api", return_value={})
+    mocker.patch("musicDL.main.SongObj.from_raw_dict", return_value=({}, ""))
+    mocker.patch("musicDL.main.DownloadManager.download_songs", return_value="")
     return request.param
 
 
@@ -77,4 +88,4 @@ def test_cli_url_exception(cli_runner, invalid_test_url):
     result = cli_runner(invalid_test_url)
 
     assert result.exit_code == 3
-    assert result.output == "Invalid Saavn URL passed\n"
+    assert result.output == "Invalid Saavn URL passed!!!\n"

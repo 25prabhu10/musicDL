@@ -17,6 +17,7 @@
   "prettier.singleQuote": true,
   "cSpell.words": [
     "Saavn",
+    "asyncio",
     "kbps"
   ]
 }

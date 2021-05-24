@@ -9,6 +9,7 @@ import logging
 import sys
 from typing import Any  # For static type checking
 
+from .downloader import DownloadManager
 from .handle_requests import get_json_data_from_api, get_json_data_from_website
 from .saavn import extract_saavn_api_url, parse_url
 from .SongObj import SongObj
@@ -40,9 +41,13 @@ def musicDL(url: str, config: dict[str, Any]) -> None:
         raw_songs_dict = get_json_data_from_api(api_url)
 
         # Get songObj list and tracking file name
-        [songs_dict, tracking_file_path] = SongObj.from_raw_dict(
+        [songs_obj_list, tracking_file_path] = SongObj.from_raw_dict(
             raw_songs_dict, url_type, config["musicDL"]
         )
+
+        # The download manager takes output path as argument
+        with DownloadManager(config["musicDL"]["output"]) as downloader:
+            downloader.download_songs(songs_obj_list, tracking_file_path)
 
         sys.exit(0)
     except Exception as e:

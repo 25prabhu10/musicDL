@@ -3,9 +3,15 @@
 
 import base64
 import copy
+import json
+import logging
 from typing import Any  # For static type checking
 
+from slugify import slugify
+
 from .vendor.pyDes import ECB, PAD_PKCS5, des
+
+logger = logging.getLogger(__name__)
 
 
 def merge_dicts(original: dict[str, Any], overwrite: dict[str, Any]) -> dict[str, Any]:
@@ -88,3 +94,50 @@ def get_decrypted_url(encrypt_url: str, quality: str, is_320kbps: bool) -> str:
             bit_rate = 160
 
     return url.replace("96.mp4", f"{bit_rate}.{extension}")
+
+
+def get_language_code(lang: str) -> str:
+    """Returns ISO 639-2/B language code of the language.
+
+    Args:
+        lang: An ISO language name (English, Hindi).
+
+    Returns:
+        Returns ISO 639-2/B language code of the language.
+        If the language was not found it will return "eng".
+        English: eng
+    """
+
+    # Load the language codes
+    lang_dict = json.load(open("lang_codes", "r"))
+    if lang in lang_dict.keys():
+        logger.debug(f"LANGUAGE: {lang}")
+        return lang_dict[lang]
+    return "eng"
+
+
+def get_file_name(url: str, first_part: str, second_part: str) -> str:
+    """Returns file name from given url, first and second part.
+
+    Args:
+        url: A URL containing the file extension.
+        first_part: A sting containing first part of the file.
+        second_part: A sting containing second part of the file.
+
+    Returns:
+        The string containing the file name with file extension.
+    """
+
+    # Create slugs of the given names
+    first_part = slugify(
+        text=first_part, max_length=125, lowercase=False, separator=" "
+    )
+    second_part = slugify(
+        text=second_part, max_length=75, lowercase=False, separator=" "
+    )
+
+    # Extract the file extension form the given URL
+    extension = "aac" if url.split(".")[-1] == "mp4" else "mp3"
+
+    # Format file name
+    return f"{first_part} - {second_part}.{extension}"

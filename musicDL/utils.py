@@ -7,8 +7,6 @@ import json
 import logging
 from typing import Any  # For static type checking
 
-from slugify import slugify
-
 from .vendor.pyDes import ECB, PAD_PKCS5, des
 
 logger = logging.getLogger(__name__)
@@ -79,21 +77,21 @@ def get_decrypted_url(encrypt_url: str, quality: str, is_320kbps: bool) -> str:
 
     # Update the audio quality and type of media
     extension = "mp4"
-    bit_rate = 96
+    bit_rate = "_96"
 
     if quality == "medium":
-        bit_rate = 120
+        bit_rate = ""
         extension = "mp3"
         url = url.replace("https://aac", "http://h")
     elif quality == "high":
-        bit_rate = 160
+        bit_rate = "_160"
     elif quality == "hd":
         if is_320kbps:
-            bit_rate = 320
+            bit_rate = "_320"
         else:
-            bit_rate = 160
+            bit_rate = "_160"
 
-    return url.replace("96.mp4", f"{bit_rate}.{extension}")
+    return url.replace("_96.mp4", f"{bit_rate}.{extension}")
 
 
 def get_language_code(lang: str) -> str:
@@ -109,7 +107,7 @@ def get_language_code(lang: str) -> str:
     """
 
     # Load the language codes
-    lang_dict = json.load(open("lang_codes", "r"))
+    lang_dict = json.load(open("lang_codes.json", "r"))
     if lang in lang_dict.keys():
         logger.debug(f"LANGUAGE: {lang}")
         return lang_dict[lang]
@@ -129,15 +127,21 @@ def get_file_name(url: str, first_part: str, second_part: str) -> str:
     """
 
     # Create slugs of the given names
-    first_part = slugify(
-        text=first_part, max_length=125, lowercase=False, separator=" "
-    )
-    second_part = slugify(
-        text=second_part, max_length=75, lowercase=False, separator=" "
-    )
+    if first_part.lower() != second_part.lower():
+        file_name = f"{first_part} - {second_part}"
+    else:
+        file_name = first_part
+
+    for disallowed_char in ["/", "\\", "*", "?", "<", ">", "|"]:
+        if disallowed_char in file_name:
+            file_name = file_name.replace(disallowed_char, "")
+
+    # ! double quotes (") and semi-colons (:) are also disallowed characters but we would
+    # ! like to retain their equivalents, so they aren't removed in the prior loop
+    file_name = file_name.replace('"', "'").replace(":", "-")[:200]
 
     # Extract the file extension form the given URL
     extension = "aac" if url.split(".")[-1] == "mp4" else "mp3"
 
     # Format file name
-    return f"{first_part} - {second_part}.{extension}"
+    return f"{file_name}.{extension}"

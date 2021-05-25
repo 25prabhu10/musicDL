@@ -6,12 +6,13 @@ Download music.
 """
 
 import logging
+import signal
 import sys
 from typing import Any  # For static type checking
 
 from .downloader import DownloadManager
 from .handle_requests import get_json_data_from_api, get_json_data_from_website
-from .saavn import extract_saavn_api_url, parse_url
+from .services.saavn import extract_saavn_api_url, parse_url
 from .SongObj import SongObj
 
 logger = logging.getLogger(__name__)
@@ -40,15 +41,23 @@ def musicDL(url: str, config: dict[str, Any]) -> None:
         # Get the songs data from the API
         raw_songs_dict = get_json_data_from_api(api_url)
 
-        # Get songObj list and tracking file name
-        [songs_obj_list, tracking_file_path] = SongObj.from_raw_dict(
-            raw_songs_dict, url_type, config["musicDL"]
-        )
+        # Get songObj list based on URL type and audio quality
+        audio_quality = config["musicDL"]["quality"]
+        songs_obj_list = SongObj.from_raw_dict(raw_songs_dict, url_type, audio_quality)
 
         # The download manager takes output path as argument
         with DownloadManager(config["musicDL"]["output"]) as downloader:
-            downloader.download_songs(songs_obj_list, tracking_file_path)
 
+            def gracefulExit(signal, frame):
+                downloader.displayManager.close()
+                sys.exit(0)
+
+            signal.signal(signal.SIGINT, gracefulExit)
+            signal.signal(signal.SIGTERM, gracefulExit)
+
+            downloader.download_songs(songs_obj_list)
+
+        logger.info("Downloading Completed...")
         sys.exit(0)
     except Exception as e:
         if not config["verbose"]:

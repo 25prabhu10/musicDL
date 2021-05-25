@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 """Song class"""
+
 import logging
 from html import unescape
 from typing import Any, Type, TypeVar  # For static type checking
 
 from slugify import slugify
 
-from musicDL.utils import get_decrypted_url, get_language_code
-
 from . import __version__
+from .handle_requests import http_get
+from .utils import get_decrypted_url, get_language_code
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +23,10 @@ class SongObj:
 
     Attributes:
         json_dict: A boolean indicating if we like SPAM or not.
-        eggs: An integer count of the eggs we have laid.
     """
+
+    # class variable for tracking file name
+    __tracking_file_path = ""
 
     def __init__(
         self,
@@ -40,13 +43,15 @@ class SongObj:
         self.__track_number = track_number
         self.__total_tracks = total_tracks
         self.__quality = quality
+        self.__media_url = ""
+        self._set_media_url()
 
     @classmethod
     def from_raw_dict(
         cls: Type[T],
         raw_json_dict: dict[str, Any],
         obj_type: str,
-        config: dict[str, Any],
+        quality: dict[str, Any],
     ) -> tuple[list[T], str]:
         """Returns a list of SongObj instances and the tracking file name.
 
@@ -71,16 +76,38 @@ class SongObj:
             song_obj_list = raw_json_dict["songs"]
             tracking_file_path = raw_json_dict["listid"]
 
-        tracking_file_path = slugify(text=tracking_file_path, max_length=150)
+        cls.__tracking_file_path = slugify(text=tracking_file_path, max_length=150)
 
         total_tracks = len(song_obj_list)
 
         song_obj_list = [
-            cls(song_obj, index, total_tracks, config["quality"])
+            cls(song_obj, index, total_tracks, quality)
             for index, song_obj in enumerate(song_obj_list, start=1)
         ]
 
-        return (song_obj_list, tracking_file_path)
+        return song_obj_list
+
+    @classmethod
+    def get_tracking_file_path(cls: Type[T]) -> str:
+        return cls.__tracking_file_path
+
+    def __eq__(self, comparedSong) -> bool:
+        if comparedSong.get_data_dump() == self.get_data_dump():
+            return True
+        else:
+            return False
+
+    def __str__(self) -> bool:
+        if self.__song_obj:
+            return str(self.__song_obj)
+        return ""
+
+    def _set_media_url(self) -> None:
+        """Returns url of the media"""
+        url = self.__song_obj.get("encrypted_media_url", "")
+        quality = self.__quality
+        is_320kbps = self.__song_obj.get("320kbps", False)
+        self.__media_url = get_decrypted_url(url, quality, is_320kbps)
 
     def get_title(self) -> str:
         """Returns title of the song"""
@@ -147,7 +174,7 @@ class SongObj:
 
     def get_duration(self) -> str:
         """Returns duration of the song"""
-        return self.__song_obj.get("duration", 0)
+        return str(self.__song_obj.get("duration", "0"))
 
     def get_starring(self) -> str:
         """Returns names of people starring in the song"""
@@ -157,17 +184,27 @@ class SongObj:
         """Returns publisher of the song"""
         return unescape(self.__song_obj.get("label", ""))
 
+    def has_saavn_lyrics(self) -> bool:
+        """Returns if saavn lyrics is available"""
+        return self.__song_obj.get("has_lyrics", False)
+
+    def set_lyrics(self, lyrics: str) -> None:
+        """Sets lyrics of the song"""
+        self.__song_obj["lyrics"] = lyrics
+
     def get_lyrics(self) -> str:
         """Returns lyrics of the song"""
-        return self.__song_obj.get("has_lyrics", False)
+        return self.__song_obj.get("lyrics", "")
+
+    def get_sync_lyrics(self) -> str:
+        """Returns sync-lyrics of the song"""
+        return ""
 
     def get_cover_image(self) -> str:
         """Returns url of cover image of the song"""
-        return self.__song_obj.get("image", "").replace("150x150", "500x500")
+        url = self.__song_obj.get("image", "").replace("150x150", "500x500")
+        return http_get(url)
 
     def get_media_url(self) -> str:
         """Returns url of the media"""
-        url = self.__song_obj.get("encrypted_media_url", "")
-        quality = self.__quality
-        is_320kbps = self.__song_obj.get("320kbps", False)
-        return get_decrypted_url(url, quality, is_320kbps)
+        return self.__media_url

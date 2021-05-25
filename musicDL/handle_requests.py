@@ -86,7 +86,7 @@ def get_json_data_from_website(url: str) -> dict[str, Any]:
     html_content = http_get(url)
 
     if html_content:
-        logger.info("Extracting songs information...")
+        logger.info("Extracting information from Saavn...")
         soup = BeautifulSoup(html_content, features="html.parser")
 
         script_string = soup.find_all("script")[-1].string
@@ -119,6 +119,7 @@ def get_json_data_from_api(url: str) -> dict[str, Any]:
     """
 
     # Get the content from the URL
+    logger.info("Fetching songs details...")
     content = http_get(url)
 
     if content:

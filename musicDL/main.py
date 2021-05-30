@@ -48,7 +48,7 @@ def musicDL(url: str, config: dict[str, Any]) -> None:
         # The download manager takes output path as argument
         with DownloadManager(config["musicDL"]["output"]) as downloader:
 
-            def gracefulExit(signal, frame):
+            def gracefulExit(signal: int, frame: Any) -> None:
                 downloader.displayManager.close()
                 sys.exit(0)
 

@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Any, Optional  # For static type checking
+from typing import Any, Optional, TypeVar  # For static type checking
 
 from rich.console import Console, JustifyMethod, OverflowMethod, detect_legacy_windows
 from rich.highlighter import Highlighter
@@ -9,27 +9,15 @@ from rich.style import StyleType
 from rich.text import Text
 from rich.theme import Theme
 
+from .constants import progress_bar_theme
 from .SongObj import SongObj
 
 logger = logging.getLogger(__name__)
 
-custom_theme = Theme(
-    {
-        "bar.back": "grey23",
-        "bar.complete": "rgb(165,66,129)",
-        "bar.finished": "rgb(114,156,31)",
-        "bar.pulse": "rgb(165,66,129)",
-        "general": "green",
-        "nonimportant": "rgb(40,100,40)",
-        "progress.data.speed": "red",
-        "progress.description": "none",
-        "progress.download": "green",
-        "progress.filesize": "green",
-        "progress.filesize.total": "green",
-        "progress.percentage": "green",
-        "progress.remaining": "rgb(40,100,40)",
-    }
-)
+# Create a generic variable that can be 'Parent', or any subclass.
+T = TypeVar("T", bound="SongObj")
+
+custom_theme = Theme(progress_bar_theme)
 
 
 class SizedTextColumn(ProgressColumn):
@@ -41,7 +29,7 @@ class SizedTextColumn(ProgressColumn):
         style: StyleType = "none",
         justify: JustifyMethod = "left",
         markup: bool = True,
-        highlighter: Highlighter = None,
+        highlighter: Highlighter = None,  # type: ignore
         overflow: Optional[OverflowMethod] = None,
         width: int = 20,
     ) -> None:
@@ -143,7 +131,7 @@ class DisplayManager:
         self.overallTotal = 100 * song_count
 
         if self.songCount > 4:
-            self.overallTaskID = self._richProgressBar.add_task(
+            self.overallTaskID = self._richProgressBar.add_task(  # type: ignore
                 description="Total",
                 processID="0",
                 message=f"{self.overallCompletedTasks}/{int(self.overallTotal / 100)} complete",
@@ -177,12 +165,12 @@ class DisplayManager:
 
 
 class _ProgressTracker:
-    def __init__(self, parent, song_obj: SongObj) -> None:
+    def __init__(self, parent: Any, song_obj: SongObj) -> None:
         self.parent = parent
         self.song_obj = song_obj
 
-        self.progress = 0
-        self.oldProgress = 0
+        self.progress = 0.0
+        self.oldProgress = 0.0
         self.downloadID = 0
         self.status = ""
 
@@ -202,7 +190,7 @@ class _ProgressTracker:
         self.progress = 100
         self.update("Skipping")
 
-    def update_progress_bar(self, file_size: str, chunk: bytes) -> None:
+    def update_progress_bar(self, file_size: float, chunk: bytes) -> None:
         """Updates progress bar to reflect media being downloaded.
 
         Args:
@@ -239,7 +227,7 @@ class _ProgressTracker:
         self.progress = 100  # self.progress + 5
         self.update("Done")
 
-    def notify_error(self, e, tb):
+    def notify_error(self, e: Any, tb: str) -> None:
         """Shows error message in progress bar.
 
         Freezes the progress bar and prints the traceback received.
@@ -256,7 +244,7 @@ class _ProgressTracker:
         )
         self.parent.print(message, color="red")
 
-    def update(self, message: str = ""):
+    def update(self, message: str = "") -> None:
         """Updates the progress bar along with message, called at every event."""
 
         self.status = message
@@ -290,7 +278,7 @@ class _ProgressTracker:
 
 class DownloadTracker:
     def __init__(self) -> None:
-        self.song_obj_list = []
+        self.song_obj_list: list[SongObj] = []
         self.saveFile: Optional[Path] = None
         self.tracking_file_path = SongObj.get_tracking_file_path()
 
@@ -308,8 +296,8 @@ class DownloadTracker:
                 f"No such tracking file found: {tracking_file_path}"
             )
 
-        with tracking_file.open("rb") as file_handle:
-            self.song_obj_list = file_handle.read().decode()
+        # with tracking_file.open("rb") as file_handle:
+        #     self.song_obj_list = file_handle.read().decode()
 
         # Save path to .musicDLTrackingFile
         self.saveFile = tracking_file
@@ -335,7 +323,7 @@ class DownloadTracker:
 
         return self.song_obj_list
 
-    def backup_to_disk(self):
+    def backup_to_disk(self) -> None:
         """
         Backs up details of song_obj's yet to be
         downloaded to a .musicDLTrackingFile.
@@ -349,10 +337,10 @@ class DownloadTracker:
             return None
 
         # prepare datadumps pf all SongObj's yet to be downloaded
-        song_data_dump = []
+        song_data_dump: list[str] = []
 
         for song in self.song_obj_list:
-            song_data_dump = str(song)
+            song_data_dump.append(str(song))
 
         # the default naming of a tracking file is
         # $nameOfSong/album/playlistID.musicDLTrackingFile,
@@ -379,6 +367,6 @@ class DownloadTracker:
         # Update the tracking file
         self.backup_to_disk()
 
-    def clear(self):
+    def clear(self) -> None:
         self.song_obj_list = []
         self.saveFile = None

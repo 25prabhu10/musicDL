@@ -141,7 +141,7 @@ def get_file_name(url: str, first_part: str, second_part: str) -> str:
     file_name = file_name.replace('"', "'").replace(":", "-")[:200]
 
     # Extract the file extension form the given URL
-    extension = "aac" if url.split(".")[-1] == "mp4" else "mp3"
+    extension = "m4a" if url.split(".")[-1] == "mp4" else "mp3"
 
     # Format file name
     return f"{file_name}.{extension}"

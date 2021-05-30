@@ -111,7 +111,7 @@ def extract_saavn_api_url(type_of_request: str, raw_json_data: dict[str, Any]) -
         logger.debug(f"Playlist ID: {_id}")
         url = f"https://www.jiosaavn.com/api.php?listid={_id}&_format=json&__call=playlist.getDetails"
 
-    if url:
-        return url
+    if not url:
+        raise ValueError("Failed to extract API URL!!!")
 
-    raise ValueError("Failed to extract API URL!!!")
+    return url

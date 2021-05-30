@@ -2,7 +2,7 @@
 """Collection of tests around saavn utility."""
 
 import pytest
-from musicDL.saavn import (
+from musicDL.services.saavn import (
     parse_url,
     is_album_url,
     is_playlist_url,

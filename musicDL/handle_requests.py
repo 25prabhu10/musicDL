@@ -52,7 +52,7 @@ def http_get(url: str, stream: bool = False) -> Any:
 
     try:
         logger.debug(f"REQUESTING URL: {url}")
-        res = requests.get(url, headers=_get_headers(), stream=stream, timeout=3)
+        res = requests.get(url, headers=_get_headers(), stream=stream, timeout=20)
 
         # Raise a requests.exceptions.HTTPError exception
         # If response status code is 4xx or 5xx.

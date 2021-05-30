@@ -46,7 +46,7 @@ class DownloadManager:
     def __enter__(self) -> Any:
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type, value, traceback):  # type: ignore
         self.displayManager.close()
 
     def download_songs(self, song_obj_list: list[SongObj]) -> None:
@@ -113,8 +113,8 @@ class DownloadManager:
                 if self.downloadTracker:
                     self.downloadTracker.notify_download_completion(song_obj)
 
-                # ! None is the default return value of all functions, we just explicitly define
-                # ! it here as a continent way to avoid executing the rest of the function.
+                # None is the default return value of all functions, we just explicitly define
+                # it here as a continent way to avoid executing the rest of the function.
                 return None
 
             with open(output_file_path, "wb") as output_file:
@@ -138,7 +138,12 @@ class DownloadManager:
                 dispayProgressTracker.notify_saavn_download_completion()
 
             lyrics = get_lyrics(
-                song_obj.get_song_id_saavn(), song_obj.has_saavn_lyrics()
+                song_id=song_obj.get_song_id_saavn(),
+                has_saavn_lyrics=song_obj.has_saavn_lyrics(),
+                title=song_obj.get_title(),
+                artist=song_obj.get_album_artists(),
+                file_path=str(output_file_path),
+                save_lyrics=True,
             )
 
             if dispayProgressTracker:
@@ -175,8 +180,8 @@ class DownloadManager:
                 raise e
 
     async def _pool_download(self, song_obj: SongObj) -> Any:
-        # ! Run asynchronous task in a pool to make sure that all processes
-        # ! don't run at once.
+        # Run asynchronous task in a pool to make sure that all processes
+        # don't run at once.
 
         # tasks that cannot acquire semaphore will wait here until it's free
         # only certain amount of tasks can acquire the semaphore at the same time

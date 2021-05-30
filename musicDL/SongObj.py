@@ -19,11 +19,7 @@ T = TypeVar("T", bound="SongObj")
 
 
 class SongObj:
-    """Represents a Saavn song data.
-
-    Attributes:
-        json_dict: A boolean indicating if we like SPAM or not.
-    """
+    """Represents a Saavn song data."""
 
     # class variable for tracking file name
     __tracking_file_path = ""
@@ -51,8 +47,8 @@ class SongObj:
         cls: Type[T],
         raw_json_dict: dict[str, Any],
         obj_type: str,
-        quality: dict[str, Any],
-    ) -> tuple[list[T], str]:
+        quality: str,
+    ) -> list[T]:
         """Returns a list of SongObj instances and the tracking file name.
 
          Args:
@@ -66,6 +62,7 @@ class SongObj:
 
         tracking_file_path = "musicDL"
 
+        # Extract tracking file name from song,  album title and plylist id
         if obj_type == "song":
             song_obj_list = list(raw_json_dict.values())
             tracking_file_path = song_obj_list[0]["song"]
@@ -91,13 +88,7 @@ class SongObj:
     def get_tracking_file_path(cls: Type[T]) -> str:
         return cls.__tracking_file_path
 
-    def __eq__(self, comparedSong) -> bool:
-        if comparedSong.get_data_dump() == self.get_data_dump():
-            return True
-        else:
-            return False
-
-    def __str__(self) -> bool:
+    def __str__(self) -> str:
         if self.__song_obj:
             return str(self.__song_obj)
         return ""
@@ -113,51 +104,62 @@ class SongObj:
         """Returns title of the song"""
         return unescape(self.__song_obj.get("song", ""))
 
-    def get_track_number(self) -> list[tuple[int, int]]:
-        """Returns a list of a tuple of (track_number/total_track)"""
-        return [(self.__track_number, self.__total_tracks)]
-
-    def get_disc_number(self) -> list[tuple[int, int]]:
-        """Returns a list of a tuple of (side/disc_number)"""
-        return [(1, 1)]
-
-    def get_genre(self) -> str:
-        """Returns genre of the song"""
-        return ""
+    def get_album_title(self) -> str:
+        """Returns name of album of the song"""
+        return unescape(self.__song_obj.get("album", ""))
 
     def get_album_artists(self) -> str:
         """Returns name of album artists of the song"""
         return unescape(self.__song_obj.get("primary_artists", ""))
 
-    def get_album_title(self) -> str:
-        """Returns name of album of the song"""
-        return unescape(self.__song_obj.get("album", ""))
+    def get_genre(self) -> str:
+        """Returns genre of the song"""
+        # TODO: Add genre
+        return ""
 
-    def get_date(self) -> str:
-        """Returns year of the song"""
-        return str(self.__song_obj.get("year", ""))
+    def get_track_number(self) -> str:
+        """Returns a str for track number as (track_number/total_track)"""
+        return f"{self.__track_number}/{self.__total_tracks}"
 
-    def get_release_year(self) -> str:
-        """Returns year of release of the song"""
-        try:
-            if "release_date" in self.__song_obj:
-                return self.__song_obj["release_date"].split("-")[0]
-        except Exception as e:
-            logger.exception(e)
-
-        return self.get_date()
-
-    def get_copyright(self) -> str:
-        """Returns copyright details of the song"""
-        return unescape(self.__song_obj.get("copyright_text", ""))
+    def get_disc_number(self) -> str:
+        """Returns a str for disk number as (side/disc_number)"""
+        return "1/1"
 
     def get_composer(self) -> str:
         """Returns composer of the song"""
         return unescape(self.__song_obj.get("music", ""))
 
+    def get_year(self) -> str:
+        """Returns year of the song"""
+        return str(self.__song_obj.get("year", ""))
+
+    def get_release_date(self) -> str:
+        """Returns date of release of the song"""
+        return (
+            self.__song_obj.get("release_date", "").replace("-", ",").replace("/", ",")
+        )
+
+    def get_copyright(self) -> str:
+        """Returns copyright details of the song"""
+        return unescape(self.__song_obj.get("copyright_text", ""))
+
     def get_encoded_by(self) -> str:
         """Returns the version of the program"""
         return f"musicDL v{__version__}"
+
+    def get_duration(self) -> str:
+        """Returns duration of the song in milliseconds"""
+        milliseconds = int(self.__song_obj.get("duration", "0")) * 1000
+        return str(milliseconds)
+
+    def get_lang_code(self) -> str:
+        """Returns language of the song"""
+        language = self.__song_obj.get("language", "").capitalize()
+        return get_language_code(language)
+
+    def get_publisher(self) -> str:
+        """Returns publisher of the song"""
+        return unescape(self.__song_obj.get("label", ""))
 
     def get_song_id_saavn(self) -> str:
         """Returns saavn id of the song"""
@@ -165,28 +167,12 @@ class SongObj:
 
     def get_type(self) -> str:
         """Returns type of the media"""
+        # TODO: Use it
         return self.__song_obj.get("type", "track")
-
-    def get_lang_code(self) -> str:
-        """Returns language of the song"""
-        language = self.__song_obj.get("language", "").capitalize()
-        return get_language_code(language)
-
-    def get_duration(self) -> str:
-        """Returns duration of the song"""
-        return str(self.__song_obj.get("duration", "0"))
-
-    def get_starring(self) -> str:
-        """Returns names of people starring in the song"""
-        return unescape(self.__song_obj.get("starring", ""))
-
-    def get_publisher(self) -> str:
-        """Returns publisher of the song"""
-        return unescape(self.__song_obj.get("label", ""))
 
     def has_saavn_lyrics(self) -> bool:
         """Returns if saavn lyrics is available"""
-        return self.__song_obj.get("has_lyrics", False)
+        return self.__song_obj.get("has_lyrics", "false") == "false"
 
     def set_lyrics(self, lyrics: str) -> None:
         """Sets lyrics of the song"""
@@ -198,6 +184,7 @@ class SongObj:
 
     def get_sync_lyrics(self) -> str:
         """Returns sync-lyrics of the song"""
+        # TODO: Get sync lyrics
         return ""
 
     def get_cover_image(self) -> str:

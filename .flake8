@@ -1,7 +1,7 @@
 [flake8]
 # Some sane defaults for the code style checker flake8
 max-line-length = 88
-select = C,E,F,W,B,B950
+select = C,E,F,W,B,B950,ISC
 extend-ignore = E203, E501
 exclude =
     .tox

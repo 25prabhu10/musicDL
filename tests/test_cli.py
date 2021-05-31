@@ -88,4 +88,4 @@ def test_cli_url_exception(cli_runner, invalid_test_url):
     result = cli_runner(invalid_test_url)
 
     assert result.exit_code == 3
-    assert result.output == "Invalid Saavn URL passed!!!\n"
+    assert result.output == "Invalid Saavn URL passed\n"

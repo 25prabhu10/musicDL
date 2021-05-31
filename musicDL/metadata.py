@@ -27,11 +27,11 @@ from .SongObj import SongObj
 
 
 def set_tags(file_path: str, meta_tags: SongObj) -> bool:
-    """Embed metadata to media files.
+    """Embed metadata into media files.
 
     Args:
-        file_path: Path to the music file.
-        meta_tags: A dict containing meta-tags of the song.
+        file_path (str): Path to the music file.
+        meta_tags (dict): Meta-tags of the song.
     """
 
     media_type = file_path.split(".")[-1]
@@ -45,14 +45,14 @@ def set_tags(file_path: str, meta_tags: SongObj) -> bool:
 
 
 def set_id3_tags(file_path: str, meta_tags: SongObj) -> bool:
-    """Embed metadata to MP3 files.
+    """Embed metadata into MP3 files.
 
     ID3v2.4 tag specification - see id3 docs:
     https://id3.org/id3v2.4.0-frames
 
     Args:
-        music_file_path: Path to the music file.
-        meta_tags: A dict containing meta-tags of the song.
+        music_file_path (str): Path to the music file.
+        meta_tags (dict): Meta-tags of the song.
     """
 
     # Embed song details
@@ -163,8 +163,8 @@ def set_mp4_tags(file_path: str, meta_tags: SongObj) -> bool:
     http://mutagen.readthedocs.io/en/latest/api/mp4.html
 
     Args:
-        music_file_path: Path to the music file.
-        meta_tags: A dict containing meta-tags of the song.
+        music_file_path (str): Path to the music file.
+        meta_tags (dict): Meta-tags of the song.
     """
 
     # Embed song details
@@ -212,7 +212,9 @@ def set_mp4_tags(file_path: str, meta_tags: SongObj) -> bool:
     audiofile["\xa9too"] = meta_tags.get_encoded_by()
 
     # Embed lyrics
-    audiofile["\xa9lyr"] = meta_tags.get_lyrics()
+    lyrics_txt = meta_tags.get_lyrics()
+    if lyrics_txt:
+        audiofile["\xa9lyr"] = lyrics_txt
 
     # Embed cover image
     album_art = meta_tags.get_cover_image()

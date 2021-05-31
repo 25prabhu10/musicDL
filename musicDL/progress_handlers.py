@@ -101,7 +101,7 @@ class DisplayManager:
         """Use this self.print to replace default print().
 
         Args:
-            text: Text to be printed to screen
+            text (Text): Text to be printed to screen
         """
 
         if self.quiet:
@@ -117,10 +117,10 @@ class DisplayManager:
             self._richProgressBar.console.print(line)
 
     def set_song_count_to(self, song_count: int) -> None:
-        """Sets the size of the progressbar based on the number of songs.
+        """Set the size of the progressbar based on the number of songs.
 
         Args:
-            song_count: The number of songs being downloaded.
+            song_count (int): The number of songs being downloaded.
         """
 
         # All calculations are based of the arbitrary choice that 1 song consists of
@@ -140,7 +140,7 @@ class DisplayManager:
             )
 
     def update_overall(self) -> None:
-        """Updates the overall progress bar."""
+        """Update the overall progress bar."""
 
         # If the overall progress bar exists
         if self.overallTaskID is not None:
@@ -151,8 +151,7 @@ class DisplayManager:
             )
 
     def new_progress_tracker(self, song_obj: SongObj) -> Any:
-        """
-        Returns new instance of `_ProgressTracker`
+        """Returns new instance of `_ProgressTracker`
         that follows the `song_obj` download subprocess.
         """
 
@@ -185,17 +184,17 @@ class _ProgressTracker:
         )
 
     def notify_download_skip(self) -> None:
-        """Updates progress bar to reflect a song being skipped"""
+        """Update progress bar to reflect a song being skipped"""
 
         self.progress = 100
         self.update("Skipping")
 
     def update_progress_bar(self, file_size: float, chunk: bytes) -> None:
-        """Updates progress bar to reflect media being downloaded.
+        """Update progress bar to reflect media being downloaded.
 
         Args:
-            file_size: A string containing total file size.
-            chunk: The bytes that were downloaded.
+            file_size (float): A string containing total file size.
+            chunk (bytes): The bytes that were downloaded.
         """
 
         # This will be called until download is complete, i.e we get an overall
@@ -209,32 +208,32 @@ class _ProgressTracker:
         self.update("Downloading")
 
     def notify_saavn_download_completion(self) -> None:
-        """Updates progresbar to reflect a audio download being completed"""
+        """Update progresbar to reflect a audio download being completed"""
 
         self.progress = 90  # self.progress + 5
         self.update("Searching lyrics")
 
     def notify_lyrics_download_completion(self) -> None:
-        """Updates progresbar to reflect getting lyrics being completed"""
+        """Update progresbar to reflect getting lyrics being completed"""
 
         self.progress = 95  # self.progress + 5
         self.update("Tagging")
 
     def notify_download_completion(self) -> None:
-        """Updates progresbar to reflect a download being completed"""
+        """Update progresbar to reflect a download being completed"""
 
         # Download completion implie ID# tag embedding was just finished
         self.progress = 100  # self.progress + 5
         self.update("Done")
 
     def notify_error(self, e: Any, tb: str) -> None:
-        """Shows error message in progress bar.
+        """Show error message in progress bar.
 
         Freezes the progress bar and prints the traceback received.
 
         Args:
-            e : error message
-            tb : traceback
+            e: error message
+            tb: traceback
         """
 
         self.update(message="Error " + self.status)
@@ -245,7 +244,7 @@ class _ProgressTracker:
         self.parent.print(message, color="red")
 
     def update(self, message: str = "") -> None:
-        """Updates the progress bar along with message, called at every event."""
+        """Update the progress bar along with message, called at every event."""
 
         self.status = message
 
@@ -253,7 +252,8 @@ class _ProgressTracker:
         delta = self.progress - self.oldProgress
 
         # Update the progress bar
-        # `start_task` called everytime to ensure progress is remove from indeterminate state
+        # `start_task` called everytime to ensure progress
+        # is remove from indeterminate state
         self.parent._richProgressBar.start_task(self.taskID)
         self.parent._richProgressBar.update(
             self.taskID,
@@ -280,13 +280,12 @@ class DownloadTracker:
     def __init__(self) -> None:
         self.song_obj_list: list[SongObj] = []
         self.saveFile: Optional[Path] = None
-        self.tracking_file_path = SongObj.get_tracking_file_path()
 
     def load_tracking_file(self, tracking_file_path: str) -> None:
-        """Reads songsObj's from disk and prepares to track their download.
+        """Read SongObj's from trackingfile.
 
         Args:
-            tracking_file_path: Path to a .musicDLTrackingFile
+            tracking_file_path (str): Path to the .musicDLTrackingFile
         """
 
         # Attempt to read .musicDLTrackingFile, raise exception if file can't be read
@@ -296,17 +295,17 @@ class DownloadTracker:
                 f"No such tracking file found: {tracking_file_path}"
             )
 
-        # with tracking_file.open("rb") as file_handle:
-        #     self.song_obj_list = file_handle.read().decode()
+        with tracking_file.open("rb") as file_handle:
+            self.song_obj_list = eval(file_handle.read().decode())
 
         # Save path to .musicDLTrackingFile
         self.saveFile = tracking_file
 
     def load_song_list(self, song_obj_list: list[SongObj]) -> None:
-        """Prepares to track download of provided song_obj's.
+        """Prepare to track download of provided SongObj's.
 
         Args:
-            song_obj_list: A list of song_obj's being downloaded
+            song_obj_list (list[SongObj]): List of SongObj's to be downloaded.
         """
 
         self.song_obj_list = song_obj_list
@@ -315,19 +314,16 @@ class DownloadTracker:
         self.backup_to_disk()
 
     def get_song_list(self) -> list[SongObj]:
-        """Retruns list of song_obj's representing songs yet to be downloaded.
+        """Retruns list of SongObj's representing songs yet to be downloaded.
 
         Returns:
-            song_obj_list: List of song_obj's yet to be downloaded.
+            song_obj_list (list[SongObj]): List of SongObj's yet to be downloaded.
         """
 
         return self.song_obj_list
 
     def backup_to_disk(self) -> None:
-        """
-        Backs up details of song_obj's yet to be
-        downloaded to a .musicDLTrackingFile.
-        """
+        """Backup SongObjs that are yet to be downloaded to a .musicDLTrackingFile"""
 
         # remove tracking file if no songs left in queue
         # we use 'return None' as a convenient exit point
@@ -345,7 +341,9 @@ class DownloadTracker:
         # the default naming of a tracking file is
         # $nameOfSong/album/playlistID.musicDLTrackingFile,
         if not self.saveFile:
-            self.saveFile = Path(self.tracking_file_path + ".musicDLTrackingFile")
+            self.saveFile = Path(
+                SongObj.get_tracking_file_path() + ".musicDLTrackingFile"
+            )
             logger.info(f"BACKUP FILE: {self.saveFile}")
 
         # backup to file
@@ -354,10 +352,10 @@ class DownloadTracker:
             file_handle.write(str(song_data_dump).encode())
 
     def notify_download_completion(self, song_obj: SongObj) -> None:
-        """Removes given song_obj from download queue and updates .musicDLTrackingFile
+        """Removes given SongObj from download queue and update .musicDLTrackingFile
 
         Args:
-            song_obj: A song_obj representing song that has been downloaded
+            song_obj (SongObj): A song that has been downloaded.
         """
 
         # Remove song form the list

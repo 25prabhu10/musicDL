@@ -50,12 +50,10 @@ class DownloadManager:
         self.displayManager.close()
 
     def download_songs(self, song_obj_list: list[SongObj]) -> None:
-        """
-        `list<song_obj>` `song_obj_list` : list of songs to be downloaded
+        """Download the given list of songs.
 
-        RETURNS `~`
-
-        downloads the given songs in parallel
+        Args:
+            song_obj_list (list<SongObj>): List of songs to be downloaded.
         """
 
         logger.info("Downloading Initiated...")
@@ -67,12 +65,10 @@ class DownloadManager:
         self._download_asynchronously(song_obj_list)
 
     def resume_download_from_tracking_file(self, tracking_file_path: str) -> None:
-        """
-        `str` `trackingFilePath` : path to a .spotdlTrackingFile
+        """Download songs from the trackingfile.
 
-        RETURNS `~`
-
-        downloads songs present on the .spotdlTrackingFile in parallel
+        Args:
+            tracking_file_path (str): Path to a .musicDLTrackingFile
         """
 
         self.downloadTracker.clear()
@@ -85,17 +81,16 @@ class DownloadManager:
         self._download_asynchronously(songObjList)
 
     async def download_song(self, song_obj: SongObj) -> None:
-        """
-        `songObj` `songObj` : song to be downloaded
-
-        RETURNS `~`
+        """Download the given song.
 
         Downloads, Converts, Normalizes song & embeds metadata as ID3 tags.
+
+        Args:
+            song_obj (SongObj): Song to be downloaded.
         """
 
         # Since most errors are expected to happen within this function, we wrap in
         # expection catcher to prevent blocking on multiple downloads
-
         try:
             dispayProgressTracker = self.displayManager.new_progress_tracker(song_obj)
 
@@ -117,7 +112,7 @@ class DownloadManager:
                 # it here as a continent way to avoid executing the rest of the function.
                 return None
 
-            with open(output_file_path, "wb") as output_file:
+            with output_file_path.open("wb") as output_file:
                 response = http_get(url, stream=True)
 
                 total = int(response.headers.get("content-length", 0))
@@ -170,7 +165,7 @@ class DownloadManager:
             if self.downloadTracker:
                 self.downloadTracker.notify_download_completion(song_obj)
 
-            logger.info(f"DOWNLOADED FILE IN: {str(output_file_path)}")
+            logger.debug(f"Downloaded file in {str(output_file_path)}")
 
         except Exception as e:
             tb = traceback.format_exc()
@@ -189,7 +184,8 @@ class DownloadManager:
             return await self.download_song(song_obj)
 
     def _download_asynchronously(self, song_obj_list: list[SongObj]) -> None:
-        logger.info("Initiating Async Downloading ...")
+        logger.info("Initiating Async Downloading")
+        logger.info(f"Downloading files into {self.output_dir}")
         tasks = [self._pool_download(song) for song in song_obj_list]
         # call all task asynchronously, and wait until all are finished
         self.loop.run_until_complete(asyncio.gather(*tasks))

@@ -19,14 +19,8 @@ LOG_LEVELS = {
     "CRITICAL": CRITICAL,
 }
 
-# Logging formats
-LOG_FORMATS = {
-    "DEBUG": "%(asctime)-15s - %(name)s - %(levelname)s: %(message)s",
-    "INFO": "%(message)s",
-    "WARNING": "%(name)s - %(levelname)s: %(message)s",
-    "ERROR": "%(asctime)-15s - %(name)s - %(levelname)s: %(message)s",
-    "CRITICAL": "%(asctime)-15s - %(name)s - %(levelname)s: %(message)s",
-}
+# Logging format
+LOG_FORMAT = "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
 
 # Progress bar theme
 progress_bar_theme = {

@@ -7,6 +7,7 @@ from typing import Any  # For static type checking
 
 from .constants import DEFAULT_CONFIG
 from .utils import merge_dicts
+from pathlib import Path
 
 
 def get_config(config_path: str, cli_config: dict[str, Any]) -> dict[str, Any]:
@@ -31,7 +32,17 @@ def get_config(config_path: str, cli_config: dict[str, Any]) -> dict[str, Any]:
     if not config_path:
         return merge_dicts(DEFAULT_CONFIG, cli_config)
 
-    with open(config_path, "r") as config_file:
+    _config_path = Path(config_path)
+
+    # If config file dose not exist, then create the file
+    # with default configs.
+    if not _config_path.exists():
+        with _config_path.open("w", encoding="UTF-8") as target:
+            json.dump(DEFAULT_CONFIG, target)
+
+        return merge_dicts(DEFAULT_CONFIG, cli_config)
+
+    with _config_path.open("r", encoding="UTF-8") as config_file:
         try:
             json_dict = json.loads(config_file.read())
         except json.JSONDecodeError as e:

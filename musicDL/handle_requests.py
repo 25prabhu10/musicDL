@@ -21,7 +21,7 @@ def _get_headers() -> dict[str, str]:
     """Returns fake headers.
 
     Returns:
-        A dict containing fake headers
+        (dict): Fake headers.
     """
 
     headers = {
@@ -36,15 +36,15 @@ def _get_headers() -> dict[str, str]:
 
 
 def http_get(url: str, stream: bool = False) -> Any:
-    """Gets the content of a URL via sending a HTTP GET request.
+    """Get the content of a URL via sending a HTTP GET request.
 
     Args:
-        url: A URL string.
-        stream: A boolean value that allows streams.
+        url (str): URL of that needs to be requested.
+        stream (bool, optional): Enable stream if ``True``.
 
     Returns:
-        The response content as bytes.
-        The response stream if stream is enabled.
+        (bytes): Response content.
+        (requests.Response): Response if ``stream`` is enabled.
 
     Raises:
         RequestException: An error occurred requesting the URL.
@@ -70,13 +70,13 @@ def http_get(url: str, stream: bool = False) -> Any:
 
 
 def get_json_data_from_website(url: str) -> dict[str, Any]:
-    """Extracts the json data from the Saavn Website.
+    """Extract the json data from the Saavn Website.
 
     Args:
-        url: A URL string of a song, an album, or a playlist.
+        url (str): URL of a song, an album, or a playlist.
 
     Returns:
-        A dict that contains the extracted json data.
+        (dict): The extracted json data.
 
     Raises:
         ValueError: An error occurred fetching Saavn web page.
@@ -101,17 +101,17 @@ def get_json_data_from_website(url: str) -> dict[str, Any]:
 
         return json.loads(raw_object)
 
-    raise ValueError("Failed to fetch the Saavn web page!!!")
+    raise ValueError("Failed to fetch the Saavn web page")
 
 
 def get_json_data_from_api(url: str) -> dict[str, Any]:
-    """Gets the json data from URL via sending a HTTP GET request.
+    """Get the json data from URL via sending a HTTP GET request.
 
     Args:
-        url: A URL string of a song, an album, or a playlist.
+        url (str): URL of a song, an album, or a playlist.
 
     Returns:
-        A dict that contains the extracted json data.
+        (dict): The extracted json data.
 
     Raises:
         JSONDecodeError: An error occurred loading json data.
@@ -132,4 +132,4 @@ def get_json_data_from_api(url: str) -> dict[str, Any]:
         if raw_json_details:
             return json.loads(raw_json_details[0])
 
-    raise ValueError("Failed in getting songs information!!!")
+    raise ValueError("Failed in getting songs information")

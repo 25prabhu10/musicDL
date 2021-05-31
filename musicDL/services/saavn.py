@@ -13,81 +13,77 @@ logger = logging.getLogger(__name__)
 
 
 def is_valid_saavn_url(url: str) -> list[str]:
-    """
-    Check if the passed URL is a valid Saavn URL.
+    """Check if the passed URL is a valid Saavn URL.
     URL should start with https://www.jiosaaavn.com
     """
     return re.findall(r"^(https://www.)?(jio)?saavn\.com.*?$", url)
 
 
 def is_song_url(url: str) -> list[str]:
-    """
-    Check if the passed URL is of a song.
-    """
+    """Check if the passed URL is of a song."""
     return re.findall(r"^(https://www.)?(jio)?saavn\.com/song/.*?$", url)
 
 
 def is_album_url(url: str) -> list[str]:
-    """
-    Check if the passed URL is of an album.
-    """
+    """Check if the passed URL is of an album."""
     return re.findall(r"^.*?(jio)?saavn.com/album/.*?", url)
 
 
 def is_playlist_url(url: str) -> list[str]:
-    """
-    Check if the passed URL is of a playlist.
-    """
+    """Check if the passed URL is of a playlist."""
     return re.findall(r"^.*?(jio)?saavn.com/(s/playlist|featured)/.*?", url)
 
 
-def parse_url(url: str) -> str:
-    """Identifies the type of URL.
+def parse_request(request: str) -> str:
+    """Identify the request type.
 
-    User can provide URL for a song or album or playlist.
+    User can provide URL for song/album/playlist or trackingfile path.
 
     Args:
-        url: A URL string of a song, an album, or a playlist.
+        request (str): A string song/album/playlist URL or trackingfile path.
 
     Returns:
-        A string containing the type of URL:
+        (str): The type of request:
             - song
             - album
             - playlist
+            - trackingfile path
 
     Raises:
-      TypeError: An error occurred identifying the URL.
+        TypeError: An error occurred identifying the request.
     """
 
     # Check if the url is a valid Saavn URL
-    logger.debug(f"URL: {url}")
+    logger.debug(f"Request: {request}")
 
-    if is_valid_saavn_url(url):
-        if is_song_url(url):
+    if request.endswith(".musicDLTrackingFile"):
+        return "trackingfile"
+
+    elif is_valid_saavn_url(request):
+        if is_song_url(request):
             return "song"
 
-        elif is_album_url(url):
+        elif is_album_url(request):
             return "album"
 
-        elif is_playlist_url(url):
+        elif is_playlist_url(request):
             return "playlist"
 
-    raise TypeError("Invalid Saavn URL passed!!!")
+    raise TypeError("Invalid Saavn URL passed")
 
 
 def extract_saavn_api_url(type_of_request: str, raw_json_data: dict[str, Any]) -> str:
-    """Creates and returns Saavn API URL from json data.
+    """Create and return Saavn API URL from json data.
 
     Args:
-        type_of_data: Type of the user passed:
+        type_of_data (str): Type of request passed by user:
                         - song
                         - album
                         - playlist
-        raw_json_data: A dict containing information of
-            the saavn entity.
+        raw_json_data (dict): Raw details of the song/album/playlist.
 
     Returns:
-        A string containing API URL.
+        url (str): The Saavn API URL.
 
     Raises:
         ValueError: An error occurred extracting API URL.
@@ -112,6 +108,6 @@ def extract_saavn_api_url(type_of_request: str, raw_json_data: dict[str, Any]) -
         url = f"https://www.jiosaavn.com/api.php?listid={_id}&_format=json&__call=playlist.getDetails"
 
     if not url:
-        raise ValueError("Failed to extract API URL!!!")
+        raise ValueError("Failed to extract API URL")
 
     return url

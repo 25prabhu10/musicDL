@@ -17,10 +17,10 @@ logger = logging.getLogger(__name__)
 
 
 def version_msg() -> str:
-    """Returns a `str` that contains musicDL version details.
+    """Returns the musicDL version details.
 
     Returns:
-        A `str` that contains musicDL version, module location,
+        (str): Details of musicDL version, module location,
         and Python version powering it.
     """
 
@@ -37,7 +37,7 @@ def version_msg() -> str:
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
 @click.version_option(__version__, "-V", "--version", message=version_msg())
-@click.argument("url", default=None, required=True, type=click.STRING)
+@click.argument("request", default=None, required=True, type=click.STRING)
 @click.option(
     "-q",
     "--quality",
@@ -82,7 +82,7 @@ def version_msg() -> str:
 )
 @click.option("--verbose", is_flag=True, help="Will print more logging messages.")
 def main(
-    url: str,
+    request: str,
     quality: str,
     output: str,
     log_level: str,
@@ -90,7 +90,7 @@ def main(
     config_file: str,
     verbose: bool,
 ) -> None:
-    """Pass URL of a song/album/playlist"""
+    """Pass URL of a song/album/playlist or trackingfile path."""
 
     # CLI options
     cli_config = {
@@ -103,12 +103,15 @@ def main(
     # Merge default, user config, and CLI options
     config_dict = get_config(config_file, cli_config)
 
-    configure_logger(
-        config_dict["log-level"], config_dict["debug-file"], config_dict["verbose"]
-    )
+    configure_logger(config_dict["log-level"], config_dict["debug-file"])
+
+    if config_file:
+        logger.debug(f"Using config file: {config_file}")
+    else:
+        logger.debug("Using CLI options along with default configs")
 
     # Calling musicDL
-    musicDL(url, config_dict)
+    musicDL(request, config_dict)
 
 
 if __name__ == "__main__":

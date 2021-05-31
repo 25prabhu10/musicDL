@@ -19,7 +19,7 @@ T = TypeVar("T", bound="SongObj")
 
 
 class SongObj:
-    """Represents a Saavn song data."""
+    """Represents a Saavn song object."""
 
     # class variable for tracking file name
     __tracking_file_path = ""
@@ -31,8 +31,7 @@ class SongObj:
         total_tracks: int,
         quality: str,
     ) -> None:
-        """
-        Inits SongObj with song dict, track number, total tracks,
+        """Initialize SongObj with song dict, track number, total tracks,
         and audio quality
         """
         self.__song_obj = json_dict
@@ -49,15 +48,15 @@ class SongObj:
         obj_type: str,
         quality: str,
     ) -> list[T]:
-        """Returns a list of SongObj instances and the tracking file name.
+        """Returns a list of SongObj instances.
 
          Args:
-            raw_json_dict: A dict containing song details.
-            obj_type: A string containing the type of URL.
-            config: A dict containing user configurations.
+            raw_json_dict (dict): Song details.
+            obj_type (str): The type of URL.
+            config (dict): User configurations.
 
         Returns:
-            A tuple of a list of SongObj instances and the tracking file name.
+            song_obj_list (list[SongObj]): A list of SongObj instances.
         """
 
         tracking_file_path = "musicDL"

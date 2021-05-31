@@ -29,15 +29,15 @@ def get_lyrics(
     """Returns lyrics for the given song.
 
     Args:
-        song_id: Saavn song id.
-        has_saavn_lyrics: A bool if Saavn has lyrics.
-        title: Song title.
-        artist: Album of the song.
-        save_lyrics: Save lyrics into file.
-        file_path: Path to lyrics file.
+        song_id (str): Saavn song id.
+        has_saavn_lyrics (bool): True if Saavn has lyrics.
+        title (str): Song title.
+        artist (str): Artist names.
+        save_lyrics (bool): Save lyrics into file if True.
+        file_path (str): Path of the lyrics file.
 
     Returns:
-        Returns lyrics for the given song.
+        lyrics (str): Lyrics of the song.
     """
 
     lyrics = ""
@@ -52,7 +52,7 @@ def get_lyrics(
 
         # If lyrics file exists then read from it.
         if file_name.exists():
-            with file_name.open("r") as ly_file:
+            with file_name.open("r", encoding="UTF-8") as ly_file:
                 return ly_file.read()
 
         # If Saavn lyrics exists get it from there.
@@ -68,7 +68,7 @@ def get_lyrics(
         logger.exception(e)
 
     if lyrics and save_lyrics:
-        with file_name.open("w") as ly_file:
+        with file_name.open("w", encoding="UTF-8") as ly_file:
             ly_file.write(lyrics)
 
     return lyrics
@@ -77,8 +77,11 @@ def get_lyrics(
 def get_lyrics_from_saavn(song_id: str) -> str:
     """Returns lyrics based on the Saavn song id.
 
+    Args:
+        song_id (str): Saavn song id.
+
     Returns:
-        Returns lyrics based on the given Saavn song id.
+        lyrics (str): Lyrics of the song.
     """
 
     # Saavn lyrics
@@ -95,12 +98,12 @@ def get_lyrics_from_genius(title: str, artist: str, retries: int = 0) -> str:
     """Fetches lyrics from Genius lyrics.
 
     Args:
-        title: Song title.
-        artist: Album of the song.
-        retries: Number of times to retry if song not found.
+        title (str): Song title.
+        artist (str): Artist names.
+        retries (int): Number of times to retry if song not found.
 
     Returns:
-        Returns lyrics for the given song.
+        (str): Lyrics of the song.
     """
 
     # Genius lyrics API
@@ -134,7 +137,7 @@ def get_lyrics_from_genius(title: str, artist: str, retries: int = 0) -> str:
         artist = artist.split(",")[0].strip()
         return get_lyrics_from_genius(title, artist)
 
-    logger.warning("Could not find lyrics from Genius!!!")
+    logger.warning("Could not find lyrics from Genius")
     return ""
 
 
@@ -142,10 +145,10 @@ def get_sync_lyrics_from_file(file_path: str) -> list[tuple[str, int]]:
     """Returns synchronized lyrics from the file.
 
     Args:
-        file_path: Path to lyrics file.
+        file_path (str): Path to lyrics file.
 
     Returns:
-        Returns synchronized lyrics for the given song.
+        sync_lyrics (list[tuple[str, int]]): Synchronized lyrics of the song.
     """
 
     sync_lyrics = []
@@ -154,7 +157,7 @@ def get_sync_lyrics_from_file(file_path: str) -> list[tuple[str, int]]:
     sync_lyrics_path = file_name.with_suffix(".lrc")
 
     if sync_lyrics_path.exists():
-        with open(sync_lyrics_path, "r") as sync_file:
+        with open(sync_lyrics_path, "r", encoding="UTF-8") as sync_file:
             raw_sync_lyrics = [line.strip() for line in sync_file.readlines()]
         raw_sync_lyrics = [
             line for line in raw_sync_lyrics if re.match(r"\[(\d+):(\d+).(\d+)\]", line)
@@ -171,10 +174,10 @@ def get_milliseconds(timing: str) -> int:
     """Returns time in milliseconds.
 
     Args:
-        timing: Time in 00:00.00 minutes format.
+        timing (str): Time in minutes (00:00.00 format).
 
     Returns:
-        Returns time in milliseconds.
+        (str): Time in milliseconds.
     """
 
     # Minutes

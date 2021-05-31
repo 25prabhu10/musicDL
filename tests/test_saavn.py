@@ -3,7 +3,7 @@
 
 import pytest
 from musicDL.services.saavn import (
-    parse_url,
+    parse_request,
     is_album_url,
     is_playlist_url,
     is_song_url,
@@ -86,7 +86,7 @@ def test_is_playlist_url(test_url, expected):
 )
 def test_parse_url(test_url, expected):
     """Test if given url is of song/album/playlist"""
-    assert parse_url(test_url) == expected
+    assert parse_request(test_url) == expected
 
 
 @pytest.fixture(
@@ -103,10 +103,13 @@ def invalid_test_url(request):
 
 
 def test_parse_url_exceptions(invalid_test_url):
-    """Test if given invalid url \
-        InvalidSaavnURLException exception is raised or not"""
+    """
+    Test if given invalid url
+    InvalidSaavnURLException exception is raised or not
+    """
+
     with pytest.raises(TypeError) as e:
-        assert parse_url(invalid_test_url)
+        assert parse_request(invalid_test_url)
 
     # Check for exception message
-    assert str(e.value) == "Invalid Saavn URL passed!!!"
+    assert str(e.value) == "Invalid Saavn URL passed"

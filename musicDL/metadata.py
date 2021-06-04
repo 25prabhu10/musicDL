@@ -26,6 +26,7 @@ from mutagen.mp4 import MP4, MP4Cover
 
 from .services.lyrics import get_sync_lyrics_from_file
 from .SongObj import SongObj
+from musicDL.config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -147,17 +148,17 @@ def set_id3_tags(file_path: str, meta_tags: SongObj) -> bool:
     audiofile.save(v2_version=4)
 
     # Embed cover image
-    album_art = meta_tags.get_cover_image()
-    if album_art:
-        audiofile["APIC"] = APIC(
-            encoding=3,
-            mime="image/jpeg",
-            type=3,
-            desc="Cover",
-            data=album_art,
-        )
-
-    audiofile.save(v2_version=4)
+    if not Config.get_config("no-coverart"):
+        album_art = meta_tags.get_cover_image()
+        if album_art:
+            audiofile["APIC"] = APIC(
+                encoding=3,
+                mime="image/jpeg",
+                type=3,
+                desc="Cover",
+                data=album_art,
+            )
+        audiofile.save(v2_version=4)
     return True
 
 
@@ -223,9 +224,10 @@ def set_mp4_tags(file_path: str, meta_tags: SongObj) -> bool:
         audiofile["\xa9lyr"] = lyrics_txt
 
     # Embed cover image
-    album_art = meta_tags.get_cover_image()
-    if album_art:
-        audiofile["covr"] = [MP4Cover(album_art, imageformat=MP4Cover.FORMAT_JPEG)]
+    if not Config.get_config("no-coverart"):
+        album_art = meta_tags.get_cover_image()
+        if album_art:
+            audiofile["covr"] = [MP4Cover(album_art, imageformat=MP4Cover.FORMAT_JPEG)]
 
     audiofile.save()
     return True

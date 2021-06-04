@@ -64,6 +64,26 @@ def version_msg() -> str:
     help="No downloading, only Embed tags into existing files.",
 )
 @click.option(
+    "--no-lyrics",
+    is_flag=True,
+    help="Don't fetch lyrics.",
+)
+@click.option(
+    "--no-coverart",
+    is_flag=True,
+    help="Don't embed cover art.",
+)
+@click.option(
+    "--no-tags",
+    is_flag=True,
+    help="Don't embed tags.",
+)
+@click.option(
+    "--save-lyrics",
+    is_flag=True,
+    help="Save lyrics as text files in the same output path.",
+)
+@click.option(
     "--backup",
     is_flag=True,
     help="Backup the tracking file.",
@@ -98,6 +118,10 @@ def main(
     quality: str,
     output: str,
     only_tagging: bool,
+    no_lyrics: bool,
+    no_coverart: bool,
+    no_tags: bool,
+    save_lyrics: bool,
     backup: bool,
     log_level: str,
     debug_file: str,
@@ -111,6 +135,10 @@ def main(
         "quality": quality,
         "output": output,
         "only-tagging": only_tagging,
+        "no-lyrics": no_lyrics,
+        "no-coverart": no_coverart,
+        "no-tags": no_tags,
+        "save-lyrics": save_lyrics,
         "backup": backup,
         "log-level": log_level,
         "debug-file": debug_file,

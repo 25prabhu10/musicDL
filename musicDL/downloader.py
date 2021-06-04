@@ -88,14 +88,21 @@ class DownloadManager:
             dispayProgressTracker: Progress tracker for the song.
         """
 
-        lyrics = get_lyrics(
-            song_id=song_obj.get_song_id_saavn(),
-            has_saavn_lyrics=song_obj.has_saavn_lyrics(),
-            title=song_obj.get_title(),
-            artist=song_obj.get_album_artists(),
-            file_path=output_file_path,
-            save_lyrics=True,
-        )
+        lyrics = ""
+
+        if not Config.get_config("no-lyrics"):
+            lyrics = get_lyrics(
+                song_id=song_obj.get_song_id_saavn(),
+                has_saavn_lyrics=song_obj.has_saavn_lyrics(),
+                title=song_obj.get_title(),
+                artist=song_obj.get_album_artists(),
+                file_path=output_file_path,
+                save_lyrics=Config.get_config("save-lyrics"),
+            )
+
+        elif dispayProgressTracker:
+            dispayProgressTracker.notify_lyrics_download_completion()
+            return None
 
         if dispayProgressTracker:
             if lyrics:
@@ -117,7 +124,14 @@ class DownloadManager:
             dispayProgressTracker: Progress tracker for the song.
         """
 
-        is_tagging_successful = set_tags(output_file_path, song_obj)
+        is_tagging_successful = False
+
+        if not Config.get_config("no-tags"):
+            is_tagging_successful = set_tags(output_file_path, song_obj)
+
+        elif dispayProgressTracker:
+            dispayProgressTracker.notify_download_completion()
+            return None
 
         # Tagging completed
         if dispayProgressTracker:

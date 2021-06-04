@@ -23,7 +23,7 @@ class SongObj:
     """Represents a Saavn song object."""
 
     # class variable for tracking file name
-    __tracking_file_path = ""
+    __tracking_file_path: str = ""
 
     def __init__(
         self,
@@ -48,15 +48,15 @@ class SongObj:
         raw_json_dict: dict[str, Any],
         obj_type: str,
     ) -> list[T]:
-        """Returns a list of SongObj instances.
+        """Returns a list of :class:`SongObj` instances.
 
-         Args:
+        Args:
             raw_json_dict: Song details.
             obj_type: The type of URL.
             config: User configurations.
 
         Returns:
-            song_obj_list: A list of SongObj instances.
+            song_obj_list: A list of :class:`SongObj` instances.
         """
 
         tracking_file_path = "musicDL"
@@ -87,6 +87,7 @@ class SongObj:
 
     @classmethod
     def get_tracking_file_path(cls: Type[T]) -> str:
+        """Returns the tracking file path"""
         return cls.__tracking_file_path
 
     def __str__(self) -> str:
@@ -115,8 +116,7 @@ class SongObj:
 
     def get_genre(self) -> str:
         """Returns genre of the song"""
-        # TODO: Add genre
-        return ""
+        return unescape(self.__song_obj.get("genre", ""))
 
     def get_track_number(self) -> str:
         """Returns a str for track number as (track_number/total_track)"""
@@ -163,16 +163,16 @@ class SongObj:
         return unescape(self.__song_obj.get("label", ""))
 
     def get_song_id_saavn(self) -> str:
-        """Returns saavn id of the song"""
+        """Returns Saavn id of the song"""
         return self.__song_obj.get("id", "")
 
-    def get_type(self) -> str:
-        """Returns type of the media"""
-        # TODO: Use it
-        return self.__song_obj.get("type", "track")
+    # TODO: Use it
+    # def get_type(self) -> str:
+    #     """Returns type of the media"""
+    #     return self.__song_obj.get("type", "track")
 
     def has_saavn_lyrics(self) -> bool:
-        """Returns if saavn lyrics is available"""
+        """Returns if Saavn lyrics is available"""
         return self.__song_obj.get("has_lyrics", "false") == "false"
 
     def set_lyrics(self, lyrics: str) -> None:
@@ -183,10 +183,10 @@ class SongObj:
         """Returns lyrics of the song"""
         return self.__song_obj.get("lyrics", "")
 
-    def get_sync_lyrics(self) -> str:
-        """Returns sync-lyrics of the song"""
-        # TODO: Get sync lyrics
-        return ""
+    # TODO: Get sync lyrics
+    # def get_sync_lyrics(self) -> str:
+    #     """Returns sync-lyrics of the song"""
+    #     return ""
 
     def get_cover_image(self) -> str:
         """Returns url of cover image of the song"""

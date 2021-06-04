@@ -6,7 +6,6 @@
 Welcome to musicDL
 ==================
 
-Welcome to musicDL's documentation.
 A command-line utility that downloads song/albums/playlists from Saavn.
 
 Basics

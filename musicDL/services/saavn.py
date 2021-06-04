@@ -40,14 +40,13 @@ def parse_request(request: str) -> str:
     User can provide URL for song/album/playlist or trackingfile path.
 
     Args:
-        request: song/album/playlist URL or trackingfile path.
+        request: URL of song/album/playlist or trackingfile path.
 
     Returns:
-        The type of request:
-            #. song
-            #. album
-            #. playlist
-            #. trackingfile path
+            #. ``song``
+            #. ``album``
+            #. ``playlist``
+            #. ``trackingfile``
 
     Raises:
         TypeError: An error occurred identifying the request.
@@ -76,10 +75,7 @@ def extract_saavn_api_url(type_of_request: str, raw_json_data: dict[str, Any]) -
     """Create and return Saavn API URL from json data.
 
     Args:
-        type_of_data: Type of request passed by user
-            #. song
-            #. album
-            #. playlist
+        type_of_data: Type of request: ``song``, ``album``, or ``playlist``
         raw_json_data: Raw details of the song/album/playlist.
 
     Returns:

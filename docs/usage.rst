@@ -10,7 +10,7 @@ First, visit the Saavn website and search for the required song/album/playlist a
 Start downloading
 -----------------
 
-Pass copied URL to the ``musicDL`` command::
+Pass copied URL to the :mod:`musicDL` command::
 
     $ musicDL https://www.jiosaavn.com/s/playlist/a4a9b6d7
 

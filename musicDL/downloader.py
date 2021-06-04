@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class DownloadManager:
-    """It is a Download Manager."""
+    """Represents a Download Manager."""
 
     # Big pool sizes on slow connections will lead to more incomplete downloads
     poolSize: int = 4
@@ -80,6 +80,14 @@ class DownloadManager:
         output_file_path: str,
         dispayProgressTracker: Any,
     ) -> None:
+        """Download lyrics for the given song (:class:`musicDL.SongObj`).
+
+        Args:
+            song_obj: The song whose lyrics needs to be downloaded.
+            output_file_path: Output path for the lyrics file.
+            dispayProgressTracker: Progress tracker for the song.
+        """
+
         lyrics = get_lyrics(
             song_id=song_obj.get_song_id_saavn(),
             has_saavn_lyrics=song_obj.has_saavn_lyrics(),
@@ -101,6 +109,14 @@ class DownloadManager:
     def embed_tags(
         self, song_obj: SongObj, output_file_path: str, dispayProgressTracker: Any
     ) -> None:
+        """Embed tags for the given song (:class:`musicDL.SongObj`).
+
+        Args:
+            song_obj: The song which needs to be embed with tags.
+            output_file_path: Output path of the song.
+            dispayProgressTracker: Progress tracker for the song.
+        """
+
         is_tagging_successful = set_tags(output_file_path, song_obj)
 
         # Tagging completed
@@ -111,7 +127,7 @@ class DownloadManager:
                 dispayProgressTracker.notify_error("Embeding tags failed", "Tagging")
 
     def set_tags_for_songs(self, song_obj_list: list[SongObj]) -> None:
-        """Set tags for the given list of songs.
+        """Set tags for the given list of songs (:class:`musicDL.SongObj`).
 
         Args:
             song_obj_list: List of songs to be tagged.
@@ -159,7 +175,7 @@ class DownloadManager:
                     raise e
 
     def download_songs(self, song_obj_list: list[SongObj]) -> None:
-        """Download the given list of songs.
+        """Download the given list of songs (:class:`musicDL.SongObj`).
 
         Args:
             song_obj_list: List of songs to be downloaded.
@@ -177,7 +193,7 @@ class DownloadManager:
         """Download songs from the trackingfile.
 
         Args:
-            tracking_file_path: Path to a .musicDLTrackingFile
+            tracking_file_path: Path of the ``.musicDLTrackingFile``
         """
 
         self.downloadTracker.clear()
@@ -190,9 +206,9 @@ class DownloadManager:
         self._download_asynchronously(songObjList)
 
     async def download_song(self, song_obj: SongObj) -> None:
-        """Download the given song.
+        """Download the given song (:class:`musicDL.SongObj`).
 
-        Downloads, Converts, Normalizes song & embeds metadata as ID3 tags.
+        Download, Convert, embed metadata, album art and lyrics.
 
         Args:
             song_obj: Song to be downloaded.

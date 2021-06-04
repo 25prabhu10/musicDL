@@ -40,7 +40,7 @@ def merge_dicts(original: dict[str, Any], overwrite: dict[str, Any]) -> dict[str
     return new_config
 
 
-def decrypt_url(url: str) -> str:
+def _decrypt_url(url: str) -> str:
     """Returns decrypted URL.
 
     Uses external module called pyDes to decrypt the URL.
@@ -74,7 +74,7 @@ def get_decrypted_url(encrypt_url: str, quality: str, is_320kbps: bool) -> str:
     """
 
     # Decrypt the media URL
-    url = decrypt_url(encrypt_url)
+    url = _decrypt_url(encrypt_url)
 
     # Update the audio quality and type of media
     extension = "mp4"
@@ -103,7 +103,7 @@ def get_language_code(lang: str) -> str:
 
     Returns:
         The ISO 639-2/B language code of the language.
-            If the language was not found it will return "eng".
+        If the language was not passed or not found it will return ``eng``.
     """
 
     # Load the language codes
@@ -124,7 +124,7 @@ def get_file_name(url: str, first_part: str, second_part: str) -> str:
 
     Returns:
         The file name along with file extension.
-        As {``first_part``} - {``second_part``}.{``extension``}
+        ``Breaking the Habit - Linkin Park.mp3``
     """
 
     # Create slugs of the given names
@@ -146,3 +146,25 @@ def get_file_name(url: str, first_part: str, second_part: str) -> str:
 
     # Format file name
     return f"{file_name}.{extension}"
+
+
+def get_milliseconds(timing: str) -> int:
+    """Returns time in milliseconds.
+
+    Args:
+        timing: Time in minutes (00:00.00 format).
+
+    Returns:
+        Time in milliseconds.
+    """
+
+    # Minutes
+    parts = timing.split(":")
+    minutes = int(parts[0])
+
+    # Seconds and milliseconds
+    parts = parts[1].split(".")
+    seconds = int(parts[0])
+    milliseconds = int(parts[1])
+
+    return (minutes * 60 * 1000) + (seconds * 1000) + (milliseconds * 10)

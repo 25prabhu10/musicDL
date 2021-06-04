@@ -2,7 +2,7 @@
 """
 Handle all URL requests
 
-Using requests module.
+Using the ``requests`` module.
 """
 
 import json
@@ -43,11 +43,11 @@ def http_get(url: str, stream: bool = False) -> Any:
     """Get the content of a URL via sending a HTTP GET request.
 
     Args:
-        url: URL of that needs to be requested.
-        stream: Enable stream if `True`.
+        url: URL that needs to be requested.
+        stream: Enable stream if ``True``.
 
     Returns:
-        ``requests.Response`` if `stream` is enabled else returns Response content.
+        ``requests.Response`` if ``stream`` is enabled else returns Response content.
 
     Raises:
         RequestException: An error occurred requesting the URL.

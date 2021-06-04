@@ -8,6 +8,7 @@ from pathlib import Path
 from lyricsgenius import Genius
 
 from musicDL.handle_requests import http_get
+from musicDL.utils import get_milliseconds
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +86,7 @@ def get_lyrics_from_saavn(song_id: str) -> str:
     """
 
     # Saavn lyrics
-    logger.debug("Getting lyrics from saavn...")
+    logger.debug("Getting lyrics from Saavn...")
     url = (
         f"https://www.jiosaavn.com/api.php?__call=lyrics.getLyrics&lyrics_id={song_id}"
         "&ctx=web6dot0&api_version=4&_format=json&_marker=0"
@@ -171,25 +172,3 @@ def get_sync_lyrics_from_file(file_path: str) -> list[tuple[str, int]]:
         ]
 
     return sync_lyrics
-
-
-def get_milliseconds(timing: str) -> int:
-    """Returns time in milliseconds.
-
-    Args:
-        timing: Time in minutes (00:00.00 format).
-
-    Returns:
-        Time in milliseconds.
-    """
-
-    # Minutes
-    parts = timing.split(":")
-    minutes = int(parts[0])
-
-    # Seconds and milliseconds
-    parts = parts[1].split(".")
-    seconds = int(parts[0])
-    milliseconds = int(parts[1])
-
-    return (minutes * 60 * 1000) + (seconds * 1000) + (milliseconds * 10)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Collection of tests around saavn utility."""
+"""Collection of tests around Saavn utility."""
 
 import pytest
 from musicDL.services.saavn import (
@@ -23,7 +23,7 @@ from musicDL.services.saavn import (
     ],
 )
 def test_is_valid_saavn_url(test_url, expected):
-    """Test if given url is of saavn or not"""
+    """Test if given url is of Saavn or not"""
     assert is_valid_saavn_url(test_url) == expected
 
 

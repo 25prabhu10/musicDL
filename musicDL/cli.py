@@ -22,6 +22,8 @@ def version_msg() -> str:
 
     Returns:
         The musicDL version, location, Pathon version, current year.
+
+        ``musicDL 0.3.3 from musicDL (Python 3.9) (c) 2021``
     """
 
     # Python version

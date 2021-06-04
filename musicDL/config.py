@@ -12,6 +12,8 @@ from .utils import merge_dicts
 
 
 class Config:
+    """Represents a configuration object"""
+
     __config: dict[str, Any] = {}
 
     @staticmethod
@@ -29,7 +31,23 @@ class Config:
 
     @staticmethod
     def get_default_config() -> dict[str, Any]:
-        """Returns app's default configuration."""
+        """Returns app's default configuration.
+
+        Example:
+
+        .. code-block::
+
+            {
+                "quality": "HD",
+                "output": ".",
+                "only-tagging": False,
+                "backup": False,
+                "log-level": "DEBUG",
+                "debug-file": ".",
+                "config-file": ".",
+                "verbose": False,
+            }
+        """
 
         config_path = Path(appdirs.user_config_dir(), "musicDL", "config.json")
         log_file_path = Path(appdirs.user_log_dir(), "musicDL", "main.log")

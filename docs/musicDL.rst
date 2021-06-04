@@ -1,13 +1,13 @@
 musicDL package
 ===============
 
-Subpackages
------------
+Package contents
+----------------
 
-.. toctree::
-   :maxdepth: 4
-
-   musicDL.services
+.. automodule:: musicDL
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------
@@ -32,14 +32,6 @@ musicDL.config module
 ---------------------
 
 .. automodule:: musicDL.config
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-musicDL.constants module
-------------------------
-
-.. automodule:: musicDL.constants
    :members:
    :undoc-members:
    :show-inheritance:
@@ -92,18 +84,26 @@ musicDL.progress\_handlers module
    :undoc-members:
    :show-inheritance:
 
-musicDL.utils module
---------------------
+musicDL.services.lyrics module
+------------------------------
 
-.. automodule:: musicDL.utils
+.. automodule:: musicDL.services.lyrics
    :members:
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
+musicDL.services.saavn module
+-----------------------------
 
-.. automodule:: musicDL
+.. automodule:: musicDL.services.saavn
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+musicDL.utils module
+--------------------
+
+.. automodule:: musicDL.utils
    :members:
    :undoc-members:
    :show-inheritance:

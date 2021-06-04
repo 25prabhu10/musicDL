@@ -65,17 +65,15 @@ def test_debug_file_logging(caplog, info_logger_with_file, debug_file, info_mess
 
 
 @pytest.fixture
-def info_logger_with_default_file(mocker, tmpdir_factory):
+def info_logger_with_default_file(tmpdir_factory):
     """
     Fixture: That calls musicDL logger setup with `info` info level
     + default log `file`.
     """
 
     # Use temp-log as default user log path
-    tmp_dir = str(Path(tmpdir_factory.mktemp("temp-log"), "temp-log"))
-
-    mocker.patch("musicDL.log.appdirs.user_log_dir", return_value=tmp_dir)
-    return configure_logger(log_level="INFO", debug_file="")
+    tmp_dir = str(Path(tmpdir_factory.mktemp("temp-log"), "temp-log.log"))
+    return configure_logger(log_level="INFO", debug_file=tmp_dir)
 
 
 def test_default_debug_file_logging(

@@ -21,7 +21,7 @@ def _get_headers() -> dict[str, str]:
     """Returns fake headers.
 
     Returns:
-        (dict): Fake headers.
+        Fake headers.
     """
 
     headers = {
@@ -29,7 +29,11 @@ def _get_headers() -> dict[str, str]:
         "Accept-Charset": "UTF-8,*;q=0.5",
         "Accept-Encoding": "gzip,deflate,sdch",
         "Accept-Language": "en-US,en;q=0.8",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.74 Safari/537.36 Edg/79.0.309.43",
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+            " AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.74"
+            " Safari/537.36 Edg/79.0.309.43"
+        ),
     }
 
     return headers
@@ -39,12 +43,11 @@ def http_get(url: str, stream: bool = False) -> Any:
     """Get the content of a URL via sending a HTTP GET request.
 
     Args:
-        url (str): URL of that needs to be requested.
-        stream (bool, optional): Enable stream if ``True``.
+        url: URL of that needs to be requested.
+        stream: Enable stream if `True`.
 
     Returns:
-        (bytes): Response content.
-        (requests.Response): Response if ``stream`` is enabled.
+        ``requests.Response`` if `stream` is enabled else returns Response content.
 
     Raises:
         RequestException: An error occurred requesting the URL.
@@ -73,10 +76,10 @@ def get_json_data_from_website(url: str) -> dict[str, Any]:
     """Extract the json data from the Saavn Website.
 
     Args:
-        url (str): URL of a song, an album, or a playlist.
+        url: URL of a song, an album, or a playlist.
 
     Returns:
-        (dict): The extracted json data.
+        The extracted json data.
 
     Raises:
         ValueError: An error occurred fetching Saavn web page.
@@ -86,7 +89,7 @@ def get_json_data_from_website(url: str) -> dict[str, Any]:
     html_content = http_get(url)
 
     if html_content:
-        logger.info("Extracting information from Saavn...")
+        logger.info("Extracting information from Saavn")
         soup = BeautifulSoup(html_content, features="html.parser")
 
         script_string = soup.find_all("script")[-1].string
@@ -108,10 +111,10 @@ def get_json_data_from_api(url: str) -> dict[str, Any]:
     """Get the json data from URL via sending a HTTP GET request.
 
     Args:
-        url (str): URL of a song, an album, or a playlist.
+        url: URL of a song, an album, or a playlist.
 
     Returns:
-        (dict): The extracted json data.
+        The extracted json data.
 
     Raises:
         JSONDecodeError: An error occurred loading json data.
@@ -119,7 +122,7 @@ def get_json_data_from_api(url: str) -> dict[str, Any]:
     """
 
     # Get the content from the URL
-    logger.info("Fetching songs details...")
+    logger.info("Fetching songs details")
     content = http_get(url)
 
     if content:

@@ -8,6 +8,7 @@ from typing import Any, Type, TypeVar  # For static type checking
 from slugify import slugify
 
 from . import __version__
+from .config import Config
 from .handle_requests import http_get
 from .utils import get_decrypted_url, get_language_code
 
@@ -31,7 +32,7 @@ class SongObj:
         total_tracks: int,
         quality: str,
     ) -> None:
-        """Initialize SongObj with song dict, track number, total tracks,
+        """Initialize `SongObj` with song dict, track number, total tracks,
         and audio quality
         """
         self.__song_obj = json_dict
@@ -46,17 +47,16 @@ class SongObj:
         cls: Type[T],
         raw_json_dict: dict[str, Any],
         obj_type: str,
-        quality: str,
     ) -> list[T]:
         """Returns a list of SongObj instances.
 
          Args:
-            raw_json_dict (dict): Song details.
-            obj_type (str): The type of URL.
-            config (dict): User configurations.
+            raw_json_dict: Song details.
+            obj_type: The type of URL.
+            config: User configurations.
 
         Returns:
-            song_obj_list (list[SongObj]): A list of SongObj instances.
+            song_obj_list: A list of SongObj instances.
         """
 
         tracking_file_path = "musicDL"
@@ -75,6 +75,8 @@ class SongObj:
         cls.__tracking_file_path = slugify(text=tracking_file_path, max_length=150)
 
         total_tracks = len(song_obj_list)
+
+        quality = Config.get_config("quality")
 
         song_obj_list = [
             cls(song_obj, index, total_tracks, quality)

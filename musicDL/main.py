@@ -10,6 +10,7 @@ import signal
 import sys
 from typing import Any  # For static type checking
 
+from .config import Config
 from .downloader import DownloadManager
 from .handle_requests import get_json_data_from_api, get_json_data_from_website
 from .services.saavn import extract_saavn_api_url, parse_request
@@ -18,17 +19,16 @@ from .SongObj import SongObj
 logger = logging.getLogger(__name__)
 
 
-def musicDL(request: str, config: dict[str, Any]) -> None:
-    """Downloads songs from Saavn using the given configurations.
+def musicDL(request: str) -> None:
+    """Download songs from Saavn.
 
     Args:
-        request (str): A string song/album/playlist URL or trackingfile path.
-        config (dict): A configurations dict.
+        request: URL of song/album/playlist or trackingfile path.
     """
 
     try:
         # The download manager takes output path as argument
-        with DownloadManager(config["musicDL"]["output"]) as downloader:
+        with DownloadManager() as downloader:
 
             def gracefulExit(signal: int, frame: Any) -> None:
                 downloader.displayManager.close()
@@ -38,7 +38,7 @@ def musicDL(request: str, config: dict[str, Any]) -> None:
             signal.signal(signal.SIGTERM, gracefulExit)
 
             request_type = parse_request(request)
-            logger.debug(f"Type: {request_type}")
+            logger.info(f"Type: {request_type}")
 
             if request_type == "trackingfile":
                 print("Preparing to resume download...")
@@ -56,17 +56,17 @@ def musicDL(request: str, config: dict[str, Any]) -> None:
                 raw_songs_dict = get_json_data_from_api(api_url)
 
                 # Get songObj list based on URL type and audio quality
-                audio_quality = config["musicDL"]["quality"]
-                songs_obj_list = SongObj.from_raw_dict(
-                    raw_songs_dict, request_type, audio_quality
-                )
+                songs_obj_list = SongObj.from_raw_dict(raw_songs_dict, request_type)
 
-                downloader.download_songs(songs_obj_list)
+                if Config.get_config("only-tagging"):
+                    downloader.set_tags_for_songs(songs_obj_list)
+                else:
+                    downloader.download_songs(songs_obj_list)
 
-        logger.info("Downloading Completed...")
+        logger.info("Downloading Completed")
         sys.exit(0)
     except Exception as e:
-        if not config["verbose"]:
+        if not Config.get_config("verbose"):
             print(str(e))
         logger.exception(e)
 

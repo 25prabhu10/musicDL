@@ -12,7 +12,7 @@ Usage is simple - call:
 
 Example:
 
-    python -m musicDL https://www.jiosaavn.com/song/a8rghuievnsv
+    $ python -m musicDL https://www.jiosaavn.com/song/a8rghuievnsv
 
 A '.musicDLTrackingFile' is automatically created with the name of
 the song/playlist/album. This file is cleaned up on successful download.
@@ -20,4 +20,4 @@ the song/playlist/album. This file is cleaned up on successful download.
 Failed files are cleaned up on download failure.
 """
 
-__version__ = "0.3.0"
+__version__ = "0.3.2"

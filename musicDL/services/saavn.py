@@ -40,14 +40,14 @@ def parse_request(request: str) -> str:
     User can provide URL for song/album/playlist or trackingfile path.
 
     Args:
-        request (str): A string song/album/playlist URL or trackingfile path.
+        request: song/album/playlist URL or trackingfile path.
 
     Returns:
-        (str): The type of request:
-            - song
-            - album
-            - playlist
-            - trackingfile path
+        The type of request:
+            #. song
+            #. album
+            #. playlist
+            #. trackingfile path
 
     Raises:
         TypeError: An error occurred identifying the request.
@@ -69,21 +69,21 @@ def parse_request(request: str) -> str:
         elif is_playlist_url(request):
             return "playlist"
 
-    raise TypeError("Invalid Saavn URL passed")
+    raise TypeError("Invalid entity passed")
 
 
 def extract_saavn_api_url(type_of_request: str, raw_json_data: dict[str, Any]) -> str:
     """Create and return Saavn API URL from json data.
 
     Args:
-        type_of_data (str): Type of request passed by user:
-                        - song
-                        - album
-                        - playlist
-        raw_json_data (dict): Raw details of the song/album/playlist.
+        type_of_data: Type of request passed by user
+            #. song
+            #. album
+            #. playlist
+        raw_json_data: Raw details of the song/album/playlist.
 
     Returns:
-        url (str): The Saavn API URL.
+        The Saavn API URL.
 
     Raises:
         ValueError: An error occurred extracting API URL.
@@ -95,17 +95,26 @@ def extract_saavn_api_url(type_of_request: str, raw_json_data: dict[str, Any]) -
     if type_of_request == "song":
         _id = raw_json_data["song"]["song"]["id"]
         logger.debug(f"Song ID: {_id}")
-        url = f"https://www.jiosaavn.com/api.php?__call=song.getDetails&cc=in&_marker=0%3F_marker%3D0&_format=json&pids={_id}"
+        url = (
+            "https://www.jiosaavn.com/api.php?__call=song.getDetails&"
+            f"cc=in&_marker=0%3F_marker%3D0&_format=json&pids={_id}"
+        )
 
     elif type_of_request == "album":
         _id = raw_json_data["albumView"]["album"]["id"]
         logger.debug(f"Album ID: {_id}")
-        url = f"https://www.jiosaavn.com/api.php?_format=json&__call=content.getAlbumDetails&albumid={_id}"
+        url = (
+            "https://www.jiosaavn.com/api.php?_format=json"
+            f"&__call=content.getAlbumDetails&albumid={_id}"
+        )
 
     elif type_of_request == "playlist":
         _id = raw_json_data["playlist"]["playlist"]["id"]
         logger.debug(f"Playlist ID: {_id}")
-        url = f"https://www.jiosaavn.com/api.php?listid={_id}&_format=json&__call=playlist.getDetails"
+        url = (
+            f"https://www.jiosaavn.com/api.php?listid={_id}"
+            "&_format=json&__call=playlist.getDetails"
+        )
 
     if not url:
         raise ValueError("Failed to extract API URL")

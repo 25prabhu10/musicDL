@@ -5,6 +5,8 @@ Set song metadata
 Using EasyID3, ID3 and MP4 modules.
 """
 
+import logging
+
 from mutagen.easyid3 import EasyID3
 from mutagen.easymp4 import EasyMP4
 from mutagen.id3 import ID3
@@ -25,13 +27,15 @@ from mutagen.mp4 import MP4, MP4Cover
 from .services.lyrics import get_sync_lyrics_from_file
 from .SongObj import SongObj
 
+logger = logging.getLogger(__name__)
+
 
 def set_tags(file_path: str, meta_tags: SongObj) -> bool:
     """Embed metadata into media files.
 
     Args:
-        file_path (str): Path to the music file.
-        meta_tags (dict): Meta-tags of the song.
+        file_path: Path to the music file.
+        meta_tags: Meta-tags of the song.
     """
 
     media_type = file_path.split(".")[-1]
@@ -51,11 +55,12 @@ def set_id3_tags(file_path: str, meta_tags: SongObj) -> bool:
     https://id3.org/id3v2.4.0-frames
 
     Args:
-        music_file_path (str): Path to the music file.
-        meta_tags (dict): Meta-tags of the song.
+        music_file_path: Path to the music file.
+        meta_tags: Meta-tags of the song.
     """
 
     # Embed song details
+    logger.info("Tagging MP3 file")
     audiofile = EasyID3(file_path)
     # Get rid of all existing ID3 tags (if any exist)
     audiofile.delete()
@@ -163,11 +168,12 @@ def set_mp4_tags(file_path: str, meta_tags: SongObj) -> bool:
     http://mutagen.readthedocs.io/en/latest/api/mp4.html
 
     Args:
-        music_file_path (str): Path to the music file.
-        meta_tags (dict): Meta-tags of the song.
+        music_file_path: Path to the music file.
+        meta_tags: Meta-tags of the song.
     """
 
     # Embed song details
+    logger.info("Tagging M4A file")
     audiofile = EasyMP4(file_path)
     # Get rid of all existing ID3 tags (if any exist)
     audiofile.delete()

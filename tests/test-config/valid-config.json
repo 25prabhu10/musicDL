@@ -1,7 +1,10 @@
 {
-  "config-file": "",
-  "debug-file": "",
+  "quality": "HD",
+  "output": ".",
+  "only-tagging": false,
+  "backup": false,
   "log-level": "DEBUG",
-  "musicDL": { "quality": "low" },
-  "verbose": true
+  "debug-file": "/home/user/.cache/log/musicDL/main.log",
+  "config-file": "/home/user/.config/musicDL/config.json",
+  "verbose": false
 }

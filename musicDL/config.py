@@ -3,54 +3,89 @@
 
 import json
 import sys
+from pathlib import Path
 from typing import Any  # For static type checking
 
-from .constants import DEFAULT_CONFIG
+import appdirs
+
 from .utils import merge_dicts
-from pathlib import Path
 
 
-def get_config(config_path: str, cli_config: dict[str, Any]) -> dict[str, Any]:
-    """Returns config after merging configs.
+class Config:
+    __config: dict[str, Any] = {}
 
-    Merges default configurations with user configurations
-    and then merge the result with the CLI options.
+    @staticmethod
+    def get_config(key: str) -> Any:
+        """Returns app's configuration for the given key.
 
-    Args:
-        config_path: Path of the config file.
-        cli_config: A dict containing the CLI options provided by the user.
+        Args:
+            key: Name of the key whose value is required.
 
-    Returns:
-        A dict formed by merging all the default configurations,
-        user defined file configurations, and user provided CLI options.
+        Returns:
+            App's configuration for the given key.
+        """
 
-    Raises:
-        JSONDecodeError: An error occurred decoding config file.
-    """
+        return Config.__config[key]
 
-    # Use default configurations if no config path is provided
-    if not config_path:
-        return merge_dicts(DEFAULT_CONFIG, cli_config)
+    @staticmethod
+    def get_default_config() -> dict[str, Any]:
+        """Returns app's default configuration."""
 
-    _config_path = Path(config_path)
+        config_path = Path(appdirs.user_config_dir(), "musicDL", "config.json")
+        log_file_path = Path(appdirs.user_log_dir(), "musicDL", "main.log")
 
-    # If config file dose not exist, then create the file
-    # with default configs.
-    if not _config_path.exists():
-        with _config_path.open("w", encoding="UTF-8") as target:
-            json.dump(DEFAULT_CONFIG, target)
+        config = {
+            "quality": "HD",
+            "output": ".",
+            "only-tagging": False,
+            "backup": False,
+            "log-level": "DEBUG",
+            "debug-file": str(log_file_path),
+            "config-file": str(config_path),
+            "verbose": False,
+        }
 
-        return merge_dicts(DEFAULT_CONFIG, cli_config)
+        return config
 
-    with _config_path.open("r", encoding="UTF-8") as config_file:
-        try:
-            json_dict = json.loads(config_file.read())
-        except json.JSONDecodeError as e:
-            print(f"{e.msg}\nUnable to parse JSON file: {config_path}")
-            sys.exit(3)
+    @staticmethod
+    def set_config(config_path: str, cli_config: dict[str, Any]) -> None:
+        """Set app's configurations.
 
-    # Merge user file configuration with default configurations
-    file_config_dict = merge_dicts(DEFAULT_CONFIG, json_dict)
+        Merges default app configurations/user configurations
+        with the CLI options and the result is used
+        as the app's configurations.
 
-    # Merge user configuration with CLI options
-    return merge_dicts(file_config_dict, cli_config)
+        Args:
+            config_path: Path of the config file.
+            cli_config: The CLI options provided by the user.
+
+        Raises:
+            JSONDecodeError: An error occurred decoding config file.
+        """
+
+        DEFAULT_CONFIG = Config.get_default_config()
+
+        if not config_path:
+            config_path = DEFAULT_CONFIG["config-file"]
+
+        _config_path = Path(config_path)
+
+        # If config file dose not exist, then create the file
+        # with default configs.
+        if not _config_path.exists():
+            _config_path.parent.mkdir(parents=True, exist_ok=True)
+            with _config_path.open("w", encoding="UTF-8") as target:
+                json.dump(DEFAULT_CONFIG, target)
+
+            Config.__config = merge_dicts(DEFAULT_CONFIG, cli_config)
+            return None
+
+        with _config_path.open("r", encoding="UTF-8") as config_file:
+            try:
+                json_dict = json.loads(config_file.read())
+            except json.JSONDecodeError as e:
+                print(f"{e.msg}\nUnable to parse JSON file: {config_path}")
+                sys.exit(3)
+
+        # Merge user configuration with CLI options
+        Config.__config = merge_dicts(json_dict, cli_config)

@@ -1,4 +1,6 @@
+import ast
 import logging
+import shutil
 from pathlib import Path
 from typing import Any, Optional, TypeVar  # For static type checking
 
@@ -9,6 +11,7 @@ from rich.style import StyleType
 from rich.text import Text
 from rich.theme import Theme
 
+from .config import Config
 from .constants import progress_bar_theme
 from .SongObj import SongObj
 
@@ -20,7 +23,7 @@ T = TypeVar("T", bound="SongObj")
 custom_theme = Theme(progress_bar_theme)
 
 
-class SizedTextColumn(ProgressColumn):
+class SizedTextColumn(ProgressColumn):  # type: ignore
     """A column containing text."""
 
     def __init__(
@@ -29,7 +32,7 @@ class SizedTextColumn(ProgressColumn):
         style: StyleType = "none",
         justify: JustifyMethod = "left",
         markup: bool = True,
-        highlighter: Highlighter = None,  # type: ignore
+        highlighter: Highlighter = None,
         overflow: Optional[OverflowMethod] = None,
         width: int = 20,
     ) -> None:
@@ -101,7 +104,7 @@ class DisplayManager:
         """Use this self.print to replace default print().
 
         Args:
-            text (Text): Text to be printed to screen
+            text: Text to be printed to screen
         """
 
         if self.quiet:
@@ -120,7 +123,7 @@ class DisplayManager:
         """Set the size of the progressbar based on the number of songs.
 
         Args:
-            song_count (int): The number of songs being downloaded.
+            song_count: The number of songs being downloaded.
         """
 
         # All calculations are based of the arbitrary choice that 1 song consists of
@@ -131,7 +134,7 @@ class DisplayManager:
         self.overallTotal = 100 * song_count
 
         if self.songCount > 4:
-            self.overallTaskID = self._richProgressBar.add_task(  # type: ignore
+            self.overallTaskID = self._richProgressBar.add_task(
                 description="Total",
                 processID="0",
                 message=f"{self.overallCompletedTasks}/{int(self.overallTotal / 100)} complete",
@@ -193,8 +196,8 @@ class _ProgressTracker:
         """Update progress bar to reflect media being downloaded.
 
         Args:
-            file_size (float): A string containing total file size.
-            chunk (bytes): The bytes that were downloaded.
+            file_size: A string containing total file size.
+            chunk: The bytes that were downloaded.
         """
 
         # This will be called until download is complete, i.e we get an overall
@@ -285,7 +288,7 @@ class DownloadTracker:
         """Read SongObj's from trackingfile.
 
         Args:
-            tracking_file_path (str): Path to the .musicDLTrackingFile
+            tracking_file_path: Path to the .musicDLTrackingFile
         """
 
         # Attempt to read .musicDLTrackingFile, raise exception if file can't be read
@@ -296,7 +299,7 @@ class DownloadTracker:
             )
 
         with tracking_file.open("rb") as file_handle:
-            self.song_obj_list = eval(file_handle.read().decode())
+            self.song_obj_list = ast.literal_eval(file_handle.read().decode())
 
         # Save path to .musicDLTrackingFile
         self.saveFile = tracking_file
@@ -305,7 +308,7 @@ class DownloadTracker:
         """Prepare to track download of provided SongObj's.
 
         Args:
-            song_obj_list (list[SongObj]): List of SongObj's to be downloaded.
+            song_obj_list: List of SongObj's to be downloaded.
         """
 
         self.song_obj_list = song_obj_list
@@ -313,11 +316,15 @@ class DownloadTracker:
         # Create a backup .musicDLTrackingFile file
         self.backup_to_disk()
 
+        if Config.get_config("backup"):
+            backup_file = self.saveFile.with_suffix(".musicDLTrackingFile.bak")  # type: ignore
+            shutil.copy(self.saveFile, backup_file)  # type: ignore
+
     def get_song_list(self) -> list[SongObj]:
         """Retruns list of SongObj's representing songs yet to be downloaded.
 
         Returns:
-            song_obj_list (list[SongObj]): List of SongObj's yet to be downloaded.
+            song_obj_list: List of `SongObj`'s yet to be downloaded.
         """
 
         return self.song_obj_list
@@ -328,8 +335,8 @@ class DownloadTracker:
         # remove tracking file if no songs left in queue
         # we use 'return None' as a convenient exit point
         if len(self.song_obj_list) == 0:
-            # if self.saveFile and self.saveFile.is_file():
-            #     self.saveFile.unlink()
+            if self.saveFile and self.saveFile.is_file():
+                self.saveFile.unlink()
             return None
 
         # prepare datadumps pf all SongObj's yet to be downloaded
@@ -348,14 +355,14 @@ class DownloadTracker:
 
         # backup to file
         # we use 'wb' instead of 'w' to accommodate your fav K-pop/J-pop/Viking music
-        with open(self.saveFile, "wb") as file_handle:
+        with self.saveFile.open("wb") as file_handle:
             file_handle.write(str(song_data_dump).encode())
 
     def notify_download_completion(self, song_obj: SongObj) -> None:
         """Removes given SongObj from download queue and update .musicDLTrackingFile
 
         Args:
-            song_obj (SongObj): A song that has been downloaded.
+            song_obj: A song that has been downloaded.
         """
 
         # Remove song form the list

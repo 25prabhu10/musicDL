@@ -26,18 +26,18 @@ def get_lyrics(
     save_lyrics: bool = False,
     file_path: str = ".",
 ) -> str:
-    """Returns lyrics for the given song.
+    """Fetch lyrics for the given song.
 
     Args:
-        song_id (str): Saavn song id.
-        has_saavn_lyrics (bool): True if Saavn has lyrics.
-        title (str): Song title.
-        artist (str): Artist names.
-        save_lyrics (bool): Save lyrics into file if True.
-        file_path (str): Path of the lyrics file.
+        song_id: Saavn song id.
+        has_saavn_lyrics: True if Saavn has lyrics.
+        title: Song title.
+        artist: Artist names.
+        save_lyrics: Save lyrics into file if True.
+        file_path: Path of the lyrics file.
 
     Returns:
-        lyrics (str): Lyrics of the song.
+        The lyrics of the song.
     """
 
     lyrics = ""
@@ -75,18 +75,21 @@ def get_lyrics(
 
 
 def get_lyrics_from_saavn(song_id: str) -> str:
-    """Returns lyrics based on the Saavn song id.
+    """Fetch lyrics from Saavn based on the Saavn song id.
 
     Args:
-        song_id (str): Saavn song id.
+        song_id: Saavn song id.
 
     Returns:
-        lyrics (str): Lyrics of the song.
+        The lyrics of the song obtained from Saavn.
     """
 
     # Saavn lyrics
     logger.debug("Getting lyrics from saavn...")
-    url = f"https://www.jiosaavn.com/api.php?__call=lyrics.getLyrics&lyrics_id={song_id}&ctx=web6dot0&api_version=4&_format=json&_marker=0"
+    url = (
+        f"https://www.jiosaavn.com/api.php?__call=lyrics.getLyrics&lyrics_id={song_id}"
+        "&ctx=web6dot0&api_version=4&_format=json&_marker=0"
+    )
     json_data = http_get(url).decode("utf-8")
     lyrics = json.loads(json_data).get("lyrics", "").replace("<br>", "\n")
 
@@ -95,15 +98,15 @@ def get_lyrics_from_saavn(song_id: str) -> str:
 
 
 def get_lyrics_from_genius(title: str, artist: str, retries: int = 0) -> str:
-    """Fetches lyrics from Genius lyrics.
+    """Fetch lyrics from Genius lyrics.
 
     Args:
-        title (str): Song title.
-        artist (str): Artist names.
-        retries (int): Number of times to retry if song not found.
+        title: Song title.
+        artist: Artist names.
+        retries: Number of times to retry if song not found.
 
     Returns:
-        (str): Lyrics of the song.
+       The lyrics of the song obtained from Genius lyrics.
     """
 
     # Genius lyrics API
@@ -145,10 +148,10 @@ def get_sync_lyrics_from_file(file_path: str) -> list[tuple[str, int]]:
     """Returns synchronized lyrics from the file.
 
     Args:
-        file_path (str): Path to lyrics file.
+        file_path: Path to lyrics file.
 
     Returns:
-        sync_lyrics (list[tuple[str, int]]): Synchronized lyrics of the song.
+        The synchronized lyrics of the song.
     """
 
     sync_lyrics = []
@@ -174,10 +177,10 @@ def get_milliseconds(timing: str) -> int:
     """Returns time in milliseconds.
 
     Args:
-        timing (str): Time in minutes (00:00.00 format).
+        timing: Time in minutes (00:00.00 format).
 
     Returns:
-        (str): Time in milliseconds.
+        Time in milliseconds.
     """
 
     # Minutes

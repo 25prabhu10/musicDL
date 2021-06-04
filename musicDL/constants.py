@@ -2,14 +2,6 @@
 
 from logging import CRITICAL, DEBUG, ERROR, INFO, WARNING
 
-# Default configurations (HOW THINGS ARE)
-DEFAULT_CONFIG = {
-    "log-level": "DEBUG",
-    "debug-file": "",
-    "verbose": False,
-    "musicDL": {"quality": "HD", "output": "."},
-}
-
 # Logging levels
 LOG_LEVELS = {
     "DEBUG": DEBUG,

@@ -1,74 +1,58 @@
 #!/usr/bin/env python
 """Collection of tests around loading musicDL config."""
 
+from pathlib import Path
+
+import appdirs
 import pytest
-from musicDL import config
+
+from musicDL.config import Config
 
 
-@pytest.fixture(params=["tests/test-config/valid-config.json"])
-def valid_config_file_path(request):
-    """Fixture: That returns path of a valid config file"""
-    return request.param
-
-
-test_expected_options = [
-    {
+def test_get_default_config():
+    config_path = Path(appdirs.user_config_dir(), "musicDL", "config.json")
+    log_file_path = Path(appdirs.user_log_dir(), "musicDL", "main.log")
+    expected = {
+        "quality": "HD",
+        "output": ".",
+        "only-tagging": False,
+        "backup": False,
         "log-level": "DEBUG",
+        "debug-file": str(log_file_path),
+        "config-file": str(config_path),
+        "verbose": False,
+    }
+
+    assert Config.get_default_config() == expected
+
+
+def test_set_config():
+    pass
+
+
+# Arrange
+@pytest.fixture(autouse=True)
+def cli_options(request):
+    """Fixture: That uses valid config path and CLI options"""
+    config_file_path = "tests/test-config/valid-config.json"
+    cli_options = {
+        "quality": "low",
+        "log-level": "INFO",
         "debug-file": "",
         "config-file": "",
         "verbose": True,
-        "musicDL": {"quality": "low", "output": "."},
-    },
-    {
-        "log-level": "DEBUG",
-        "debug-file": "",
-        "config-file": "",
-        "verbose": True,
-        "musicDL": {"quality": "high", "output": "."},
-    },
-]
-
-test_cli_options = [
-    {},
-    {
-        "log-level": "DEBUG",
-        "debug-file": "",
-        "config-file": "",
-        "musicDL": {
-            "quality": "high",
-        },
-    },
-]
+    }
+    Config.set_config(config_file_path, cli_options)
 
 
 @pytest.mark.parametrize(
-    "cli_options,expected",
-    [
-        (test_cli_options[0], test_expected_options[0]),
-        (test_cli_options[1], test_expected_options[1]),
-    ],
+    "option,expected",
+    [("log-level", "INFO"), ("output", "."), ("verbose", True), ("backup", False)],
 )
-def test_get_config(valid_config_file_path, cli_options, expected):
+def test_get_config(option, expected):
     """Test valid config opened and rendered correctly."""
+    # Act
+    config_dict = Config.get_config(option)
 
-    config_dict = config.get_config(valid_config_file_path, cli_options)
-
+    # Assert
     assert config_dict == expected
-
-
-# @pytest.mark.parametrize(
-#     "config_path",
-#     [
-#         "tests/test-config/invalid-config.json",
-#         "tests/test-config/empty-config.json",
-#     ],
-# )
-# def test_get_config_does_not_exist(config_path):
-#     """
-#     Check that `json.JSONDecodeError` is raised when
-#     attempting to get a invalid config file.
-#     """
-
-#     result = config.get_config(config_path, {})
-
-#     assert result == "Invalid Saavn URL passed"

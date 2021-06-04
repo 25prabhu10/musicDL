@@ -19,11 +19,11 @@ def merge_dicts(original: dict[str, Any], overwrite: dict[str, Any]) -> dict[str
     preserving existing keys.
 
     Args:
-        original (dict): The original dict.
-        overwrite (dict): A dict that needs to be merged with the original dict.
+        original: The original dict.
+        overwrite: A dict that needs to be merged with the original dict.
 
     Returns:
-        new_config (dict): A dict formed after the merger.
+        The new merged dict.
     """
 
     # Create a deep copy of original dict
@@ -34,7 +34,7 @@ def merge_dicts(original: dict[str, Any], overwrite: dict[str, Any]) -> dict[str
         # nested dicts, for example `abbreviations`
         if isinstance(v, dict):
             new_config[k] = merge_dicts(original.get(k, {}), v)
-        else:
+        elif v:
             new_config[k] = v
 
     return new_config
@@ -46,10 +46,10 @@ def decrypt_url(url: str) -> str:
     Uses external module called pyDes to decrypt the URL.
 
     Args:
-        url (str): Encrypted URL.
+        url: Encrypted URL.
 
     Returns:
-        dec_str (str): Decrypted URL.
+        The decrypted URL.
     """
 
     # Key and IV are coded in plaintext in the app when de-compiled
@@ -66,11 +66,11 @@ def get_decrypted_url(encrypt_url: str, quality: str, is_320kbps: bool) -> str:
     """Returns decrypted URL based on the audio quality.
 
     Args:
-        encrypt_url (str): Encrypted URL.
-        quality (str): Audio quality.
+        encrypt_url: Encrypted URL.
+        quality: Audio quality.
 
     Returns:
-        (str): Decrypted URL.
+        The decrypted URL.
     """
 
     # Decrypt the media URL
@@ -99,17 +99,17 @@ def get_language_code(lang: str) -> str:
     """Returns ISO 639-2/B language code of the language.
 
     Args:
-        lang (str): An ISO language name (English, Hindi).
+        lang: An ISO language name (English, Hindi).
 
     Returns:
-        (str): ISO 639-2/B language code of the language.
+        The ISO 639-2/B language code of the language.
             If the language was not found it will return "eng".
     """
 
     # Load the language codes
     lang_dict = json.load(open("lang_codes.json", "r", encoding="UTF-8"))
     if lang in lang_dict.keys():
-        logger.debug(f"LANGUAGE: {lang}")
+        logger.info(f"LANGUAGE: {lang}")
         return lang_dict[lang]
     return "eng"
 
@@ -118,12 +118,13 @@ def get_file_name(url: str, first_part: str, second_part: str) -> str:
     """Returns file name from given url, first and second part.
 
     Args:
-        url (str): URL along with the file extension.
-        first_part (str): First part of the file name.
-        second_part (str): Second part of the file name.
+        url: URL along with the file extension.
+        first_part: First part of the file name.
+        second_part: Second part of the file name.
 
     Returns:
-        (str): The file name along with file extension.
+        The file name along with file extension.
+        As {``first_part``} - {``second_part``}.{``extension``}
     """
 
     # Create slugs of the given names

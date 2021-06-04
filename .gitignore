@@ -132,7 +132,9 @@ dmypy.json
 .temp/
 launch.json
 *.musicDLTrackingFile
+*.bak
 *.aac
 *.mp3
 *.mp4
 *.m4a
+*.txt

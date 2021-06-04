@@ -317,7 +317,7 @@ class DownloadTracker:
         self.backup_to_disk()
 
         if Config.get_config("backup"):
-            backup_file = self.saveFile.with_suffix(".musicDLTrackingFile.bak")  # type: ignore
+            backup_file = Path(Config.get_config("output"), self.saveFile)  # type: ignore
             shutil.copy(self.saveFile, backup_file)  # type: ignore
 
     def get_song_list(self) -> list[SongObj]:

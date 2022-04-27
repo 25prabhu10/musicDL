@@ -39,12 +39,12 @@ class Config:
 
             {
                 "quality": "HD",
-                "output": ".",
+                "output": "Music",
                 "only-tagging": False,
                 "backup": False,
                 "log-level": "DEBUG",
-                "debug-file": ".",
-                "config-file": ".",
+                "debug-file": "main.log",
+                "config-file": "config.json",
                 "verbose": False,
             }
         """
@@ -59,8 +59,12 @@ class Config:
             "no-lyrics": False,
             "no-coverart": False,
             "no-tags": False,
-            "save-lyrics": False,
-            "backup": False,
+            "update-tags": False,
+            "save-lyrics": True,
+            "backup": True,
+            "output-format": "m4a",
+            "ffmpeg": "ffmpeg",
+            "ignore-ffmpeg-version": False,
             "log-level": "DEBUG",
             "debug-file": str(log_file_path),
             "config-file": str(config_path),

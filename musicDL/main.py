@@ -13,6 +13,7 @@ from typing import Any  # For static type checking
 from .config import Config
 from .downloader import DownloadManager
 from .handle_requests import get_json_data_from_api, get_json_data_from_website
+from .services import ffmpeg
 from .services.saavn import extract_saavn_api_url, parse_request
 from .SongObj import SongObj
 
@@ -27,6 +28,13 @@ def musicDL(request: str) -> None:
     """
 
     try:
+
+        if Config.get_config("output-format"):
+            if not ffmpeg.has_correct_version(
+                Config.get_config("ignore-ffmpeg-version"), Config.get_config("ffmpeg")
+            ):
+                sys.exit(1)
+
         # The download manager takes output path as argument
         with DownloadManager() as downloader:
 

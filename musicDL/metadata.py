@@ -64,7 +64,8 @@ def set_id3_tags(file_path: str, meta_tags: SongObj) -> bool:
     logger.info("Tagging MP3 file")
     audiofile = EasyID3(file_path)
     # Get rid of all existing ID3 tags (if any exist)
-    audiofile.delete()
+    if not Config.get_config("update-tags"):
+        audiofile.delete()
 
     # Desc [MP3 tags]
     # Title [TIT2]
@@ -120,7 +121,9 @@ def set_id3_tags(file_path: str, meta_tags: SongObj) -> bool:
     audiofile["USER"] = USER(encoding=3, text="For Private Use Only", lang="eng")
     # Comment [COMM]
     audiofile["COMM"] = COMM(
-        encoding=3, text=f"Saavn ID: {meta_tags.get_song_id_saavn()}", lang="eng"
+        encoding=3,
+        text=f"Saavn ID: {meta_tags.get_song_id_saavn()}\nURL: {meta_tags.get_media_url()}",
+        lang="eng",
     )
 
     # Embed lyrics
@@ -177,7 +180,8 @@ def set_mp4_tags(file_path: str, meta_tags: SongObj) -> bool:
     logger.info("Tagging M4A file")
     audiofile = EasyMP4(file_path)
     # Get rid of all existing ID3 tags (if any exist)
-    audiofile.delete()
+    if not Config.get_config("update-tags"):
+        audiofile.delete()
 
     # Desc [MP4 tags]
     # Title [\xa9nam]
@@ -206,7 +210,9 @@ def set_mp4_tags(file_path: str, meta_tags: SongObj) -> bool:
     audiofile["discnumber"] = meta_tags.get_disc_number()
 
     # Comment [\xa9cmt]
-    audiofile["comment"] = f"Saavn ID: {meta_tags.get_song_id_saavn()}"
+    audiofile[
+        "comment"
+    ] = f"Saavn ID: {meta_tags.get_song_id_saavn()}\nURL: {meta_tags.get_media_url()}"
 
     # Ember basic meta-tags
     audiofile.save()

@@ -1,1 +1,1 @@
-__all__ = ["lyrics", "saavn"]
+__all__ = ["lyrics", "saavn", "ffmpeg"]

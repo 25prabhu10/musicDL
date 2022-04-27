@@ -137,8 +137,8 @@ def get_file_name(url: str, first_part: str, second_part: str) -> str:
         if disallowed_char in file_name:
             file_name = file_name.replace(disallowed_char, "")
 
-    # ! double quotes (") and semi-colons (:) are also disallowed characters but we would
-    # ! like to retain their equivalents, so they aren't removed in the prior loop
+    # double quotes (") and semi-colons (:) are also disallowed characters but we would
+    # like to retain their equivalents, so they aren't removed in the prior loop
     file_name = file_name.replace('"', "'").replace(":", "-")[:200]
 
     # Extract the file extension form the given URL

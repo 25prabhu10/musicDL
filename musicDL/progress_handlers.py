@@ -1,6 +1,7 @@
 import ast
 import logging
 import shutil
+import time
 from pathlib import Path
 from typing import Any, Optional, TypeVar  # For static type checking
 
@@ -214,12 +215,18 @@ class _ProgressTracker:
         """Update progresbar to reflect a audio download being completed"""
 
         self.progress = 90  # self.progress + 5
+        self.update("Converting")
+
+    def notify_conversion_completion(self) -> None:
+        """Update progresbar to reflect a audio conversion being completed"""
+
+        self.progress = 95  # self.progress + 5
         self.update("Searching lyrics")
 
     def notify_lyrics_download_completion(self) -> None:
         """Update progresbar to reflect getting lyrics being completed"""
 
-        self.progress = 95  # self.progress + 5
+        self.progress = 99  # self.progress + 5
         self.update("Tagging")
 
     def notify_download_completion(self) -> None:
@@ -317,7 +324,9 @@ class DownloadTracker:
         self.backup_to_disk()
 
         if Config.get_config("backup"):
-            backup_file = Path(Config.get_config("output"), self.saveFile)  # type: ignore
+            backup_file = Path(
+                Config.get_config("output"), f"{int(time.time())} - {self.saveFile}"
+            )  # type: ignore
             shutil.copy(self.saveFile, backup_file)  # type: ignore
 
     def get_song_list(self) -> list[SongObj]:

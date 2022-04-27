@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+"""
+Contains all the lyrics related services
+
+Get lyrics from Saavn or Genius lyrics.
+"""
+
 import json
 import logging
 import os

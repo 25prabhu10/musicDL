@@ -79,6 +79,11 @@ def version_msg() -> str:
     help="Don't embed tags.",
 )
 @click.option(
+    "--update-tags",
+    is_flag=True,
+    help="Update embed tags.",
+)
+@click.option(
     "--save-lyrics",
     is_flag=True,
     help="Save lyrics as text files in the same output path.",
@@ -87,6 +92,26 @@ def version_msg() -> str:
     "--backup",
     is_flag=True,
     help="Backup the tracking file.",
+)
+@click.option(
+    "--output-format",
+    default="m4a",
+    show_default=True,
+    type=click.Choice(["mp3", "aac", "m4a"], case_sensitive=False),
+    metavar="",
+    help="Output audio format.",
+)
+@click.option(
+    "--ffmpeg",
+    default="ffmpeg",
+    type=click.Path(dir_okay=False),
+    metavar="",
+    help="Path to ffmpeg application.",
+)
+@click.option(
+    "--ignore-ffmpeg-version",
+    is_flag=True,
+    help="Ignore ffmpeg version is getting version error.",
 )
 @click.option(
     "--log-level",
@@ -121,8 +146,12 @@ def main(
     no_lyrics: bool,
     no_coverart: bool,
     no_tags: bool,
+    update_tags: bool,
     save_lyrics: bool,
     backup: bool,
+    output_format: str,
+    ffmpeg: str,
+    ignore_ffmpeg_version: bool,
     log_level: str,
     debug_file: str,
     config_file: str,
@@ -138,8 +167,12 @@ def main(
         "no-lyrics": no_lyrics,
         "no-coverart": no_coverart,
         "no-tags": no_tags,
+        "update-tags": update_tags,
         "save-lyrics": save_lyrics,
         "backup": backup,
+        "output-format": output_format,
+        "ffmpeg": ffmpeg,
+        "ignore-ffmpeg-version": ignore_ffmpeg_version,
         "log-level": log_level,
         "debug-file": debug_file,
         "config-file": config_file,

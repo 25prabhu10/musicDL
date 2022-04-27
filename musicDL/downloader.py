@@ -10,6 +10,7 @@ from .config import Config
 from .handle_requests import http_get
 from .metadata import set_tags
 from .progress_handlers import DisplayManager, DownloadTracker
+from .services import ffmpeg
 from .services.lyrics import get_lyrics
 from .SongObj import SongObj
 from .utils import get_file_name
@@ -37,19 +38,22 @@ class DownloadManager:
         self.downloadTracker = DownloadTracker()
 
         if sys.platform == "win32":
-            # ! ProactorEventLoop is required on Windows to run subprocess asynchronously
-            # ! it is default since Python 3.8 but has to be changed for previous versions
+            # ProactorEventLoop is required on Windows to run subprocess asynchronously
+            # it is default since Python 3.8 but has to be changed for previous versions
             loop = asyncio.ProactorEventLoop()
             asyncio.set_event_loop(loop)
 
         self.loop = asyncio.get_event_loop()
-        # ! semaphore is required to limit concurrent asyncio executions
+        # semaphore is required to limit concurrent asyncio executions
         self.semaphore = asyncio.Semaphore(self.poolSize)
 
-        # ! thread pool executor is used to run blocking (CPU-bound) code from a thread
+        # thread pool executor is used to run blocking (CPU-bound) code from a thread
         self.thread_executor = concurrent.futures.ThreadPoolExecutor(
             max_workers=self.poolSize
         )
+
+        # ffmpeg path
+        self.ffmpeg_path = Config.get_config("ffmpeg")
 
     def __enter__(self) -> Any:
         return self
@@ -263,9 +267,26 @@ class DownloadManager:
                             if dispayProgressTracker:
                                 dispayProgressTracker.update_progress_bar(total, ch)
 
+            if not output_file_path.exists():
+                if dispayProgressTracker:
+                    dispayProgressTracker.notify_error("Download failed", "Downloading")
+                return None
+
             # Raw media downloading complete
             if dispayProgressTracker:
                 dispayProgressTracker.notify_saavn_download_completion()
+
+            output_format = Config.get_config("output-format")
+            if output_format:
+                if not str(output_file_path).endswith(output_format):
+                    output_file_path = await ffmpeg.convert(
+                        output_format=output_format,
+                        downloaded_file_path=str(output_file_path),
+                        ffmpeg_path=self.ffmpeg_path,
+                    )
+
+            if dispayProgressTracker:
+                dispayProgressTracker.notify_conversion_completion()
 
             self.download_lyrics(
                 song_obj=song_obj,

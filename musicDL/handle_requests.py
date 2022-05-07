@@ -92,7 +92,7 @@ def get_json_data_from_website(url: str) -> dict[str, Any]:
         logger.info("Extracting information from Saavn")
         soup = BeautifulSoup(html_content, features="html.parser")
 
-        script_string = soup.find_all("script")[-1].string
+        script_string = soup.find_all("script")[4].string
         raw_object = (
             re.sub(re.compile(r"//.*?\n"), "", script_string)
             .replace("window.__INITIAL_DATA__ = ", "")

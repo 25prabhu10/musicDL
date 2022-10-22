@@ -17,22 +17,22 @@ logger = logging.getLogger(__name__)
 
 
 def version_msg() -> str:
-    """Returns a formated string containing the musicDL package version,
+    """Returns a formatted string containing the musicDL package version,
     location of the package, Python version, and the current year.
 
     Returns:
-        The musicDL version, location, Pathon version, current year.
+        The musicDL version, location, Python version, current year.
 
-        ``musicDL 0.3.3 from musicDL (Python 3.9) (c) 2021``
+        ``musicDL 0.5.2 from musicDL (Python 3.10.7) (c) 2022``
     """
 
     # Python version
-    python_version = sys.version[:3]
+    python_version = sys.version.split(" ")[0]
     # Location of the module
     location = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # Current year
     year = date.today().year
-    # Formated message
+    # Formatted message
     message = "musicDL %(version)s from {} (Python {}) (c) {}"
     return message.format(location, python_version, year)
 

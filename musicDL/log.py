@@ -18,7 +18,7 @@ def configure_logger(log_level: str, debug_file: str) -> logging.Logger:
 
     Args:
         log_level: Logging level for the debug file.
-        debug_file: Path to the loging file.
+        debug_file: Path to the log file.
 
     Returns:
         An instance of ``logging.Logger``.

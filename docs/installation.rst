@@ -20,7 +20,7 @@ You can install the Python binaries from `python.org <https://www.python.org/dow
     $ brew install python3
 
 
-Install cookiecutter
+Install musicDL
 --------------------
 
 At the command line:

@@ -62,7 +62,7 @@ class DownloadManager:
         self.displayManager.close()
 
     def _get_output_file_path(self, song_obj: SongObj) -> Path:
-        """Retruns the media file path.
+        """Returns the media file path.
 
         Args:
             song_obj: Song details.
@@ -82,14 +82,14 @@ class DownloadManager:
         self,
         song_obj: SongObj,
         output_file_path: str,
-        dispayProgressTracker: Any,
+        displayProgressTracker: Any,
     ) -> None:
         """Download lyrics for the given song (:class:`musicDL.SongObj`).
 
         Args:
             song_obj: The song whose lyrics needs to be downloaded.
             output_file_path: Output path for the lyrics file.
-            dispayProgressTracker: Progress tracker for the song.
+            displayProgressTracker: Progress tracker for the song.
         """
 
         lyrics = ""
@@ -104,28 +104,28 @@ class DownloadManager:
                 save_lyrics=Config.get_config("save-lyrics"),
             )
 
-        elif dispayProgressTracker:
-            dispayProgressTracker.notify_lyrics_download_completion()
+        elif displayProgressTracker:
+            displayProgressTracker.notify_lyrics_download_completion()
             return None
 
-        if dispayProgressTracker:
+        if displayProgressTracker:
             if lyrics:
                 song_obj.set_lyrics(lyrics)
-                dispayProgressTracker.notify_lyrics_download_completion()
+                displayProgressTracker.notify_lyrics_download_completion()
             else:
-                dispayProgressTracker.notify_error(
+                displayProgressTracker.notify_error(
                     "Couldn't find lyrics", "Searching Lyrics"
                 )
 
     def embed_tags(
-        self, song_obj: SongObj, output_file_path: str, dispayProgressTracker: Any
+        self, song_obj: SongObj, output_file_path: str, displayProgressTracker: Any
     ) -> None:
         """Embed tags for the given song (:class:`musicDL.SongObj`).
 
         Args:
             song_obj: The song which needs to be embed with tags.
             output_file_path: Output path of the song.
-            dispayProgressTracker: Progress tracker for the song.
+            displayProgressTracker: Progress tracker for the song.
         """
 
         is_tagging_successful = False
@@ -133,16 +133,16 @@ class DownloadManager:
         if not Config.get_config("no-tags"):
             is_tagging_successful = set_tags(output_file_path, song_obj)
 
-        elif dispayProgressTracker:
-            dispayProgressTracker.notify_download_completion()
+        elif displayProgressTracker:
+            displayProgressTracker.notify_download_completion()
             return None
 
         # Tagging completed
-        if dispayProgressTracker:
+        if displayProgressTracker:
             if is_tagging_successful:
-                dispayProgressTracker.notify_download_completion()
+                displayProgressTracker.notify_download_completion()
             else:
-                dispayProgressTracker.notify_error("Embeding tags failed", "Tagging")
+                displayProgressTracker.notify_error("Embedding tags failed", "Tagging")
 
     def set_tags_for_songs(self, song_obj_list: list[SongObj]) -> None:
         """Set tags for the given list of songs (:class:`musicDL.SongObj`).
@@ -159,36 +159,36 @@ class DownloadManager:
 
         for song_obj in song_obj_list:
             try:
-                dispayProgressTracker = self.displayManager.new_progress_tracker(
+                displayProgressTracker = self.displayManager.new_progress_tracker(
                     song_obj
                 )
 
                 output_file_path = self._get_output_file_path(song_obj)
 
                 if not output_file_path.is_file():
-                    if dispayProgressTracker:
-                        dispayProgressTracker.notify_error("File not found", "Tagging")
+                    if displayProgressTracker:
+                        displayProgressTracker.notify_error("File not found", "Tagging")
                 else:
-                    if dispayProgressTracker:
-                        dispayProgressTracker.notify_saavn_download_completion()
+                    if displayProgressTracker:
+                        displayProgressTracker.notify_saavn_download_completion()
 
                     self.download_lyrics(
                         song_obj=song_obj,
                         output_file_path=str(output_file_path),
-                        dispayProgressTracker=dispayProgressTracker,
+                        displayProgressTracker=displayProgressTracker,
                     )
 
                     self.embed_tags(
                         song_obj=song_obj,
                         output_file_path=str(output_file_path),
-                        dispayProgressTracker=dispayProgressTracker,
+                        displayProgressTracker=displayProgressTracker,
                     )
 
                     logger.info(f"Successfully tagged {str(output_file_path)}")
             except Exception as e:
                 tb = traceback.format_exc()
-                if dispayProgressTracker:
-                    dispayProgressTracker.notify_error(e, tb)
+                if displayProgressTracker:
+                    displayProgressTracker.notify_error(e, tb)
                 else:
                     raise e
 
@@ -233,15 +233,15 @@ class DownloadManager:
         """
 
         # Since most errors are expected to happen within this function, we wrap in
-        # expection catcher to prevent blocking on multiple downloads
+        # exception catcher to prevent blocking on multiple downloads
         try:
-            dispayProgressTracker = self.displayManager.new_progress_tracker(song_obj)
+            displayProgressTracker = self.displayManager.new_progress_tracker(song_obj)
 
             output_file_path = self._get_output_file_path(song_obj)
 
             if output_file_path.is_file():
                 if self.displayManager:
-                    dispayProgressTracker.notify_download_skip()
+                    displayProgressTracker.notify_download_skip()
                 if self.downloadTracker:
                     self.downloadTracker.notify_download_completion(song_obj)
 
@@ -264,17 +264,19 @@ class DownloadManager:
                     ):
                         if ch:
                             output_file.write(ch)
-                            if dispayProgressTracker:
-                                dispayProgressTracker.update_progress_bar(total, ch)
+                            if displayProgressTracker:
+                                displayProgressTracker.update_progress_bar(total, ch)
 
             if not output_file_path.exists():
-                if dispayProgressTracker:
-                    dispayProgressTracker.notify_error("Download failed", "Downloading")
+                if displayProgressTracker:
+                    displayProgressTracker.notify_error(
+                        "Download failed", "Downloading"
+                    )
                 return None
 
             # Raw media downloading complete
-            if dispayProgressTracker:
-                dispayProgressTracker.notify_saavn_download_completion()
+            if displayProgressTracker:
+                displayProgressTracker.notify_saavn_download_completion()
 
             output_format = Config.get_config("output-format")
             if output_format:
@@ -285,19 +287,19 @@ class DownloadManager:
                         ffmpeg_path=self.ffmpeg_path,
                     )
 
-            if dispayProgressTracker:
-                dispayProgressTracker.notify_conversion_completion()
+            if displayProgressTracker:
+                displayProgressTracker.notify_conversion_completion()
 
             self.download_lyrics(
                 song_obj=song_obj,
                 output_file_path=str(output_file_path),
-                dispayProgressTracker=dispayProgressTracker,
+                displayProgressTracker=displayProgressTracker,
             )
 
             self.embed_tags(
                 song_obj=song_obj,
                 output_file_path=str(output_file_path),
-                dispayProgressTracker=dispayProgressTracker,
+                displayProgressTracker=displayProgressTracker,
             )
 
             # Download complete
@@ -308,8 +310,8 @@ class DownloadManager:
 
         except Exception as e:
             tb = traceback.format_exc()
-            if dispayProgressTracker:
-                dispayProgressTracker.notify_error(e, tb)
+            if displayProgressTracker:
+                displayProgressTracker.notify_error(e, tb)
             else:
                 raise e
 

@@ -63,7 +63,7 @@ async def convert(
     #. ``-v quiet``: Show nothing at all; be silent
     #. ``-i <INPUT>``: Input file path
     #. ``-acodec <CODEC>``: Audio codec being used
-    #. ``-abr true``: utomatically determines
+    #. ``-abr true``: automatically determines
     #. and passes the audio encoding bitrate to the filters and encoder
     #. ``
 
@@ -92,7 +92,7 @@ async def convert(
 
     command = f'{ffmpeg_path} -v quiet -y -vn -i "%s" -c:a {codec} -b:a {bitrate}  "%s"'
 
-    # bash/ffmpeg on Unix systems need to have excape char (\) for special characters: \$
+    # bash/ffmpeg on Unix systems need to have escape char (\) for special characters: \$
     # alternatively the quotes could be reversed (single <-> double) in the command then
     # the windows special characters needs escaping (^): ^\  ^&  ^|  ^>  ^<  ^^
     output_file = downloaded_file_path.with_suffix(f".{output_format}")

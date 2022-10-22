@@ -60,9 +60,9 @@ def mock_functions(mocker):
 @pytest.mark.parametrize(
     "test_entity,expected",
     [
-        ("https://www.jiosaavn.com/song/a", "Fetching Song...\n"),
-        ("https://www.jiosaavn.com/s/playlist/a", "Fetching Playlist...\n"),
-        ("temp.musicDLTrackingFile", "Preparing to resume download...\n"),
+        ("https://www.jiosaavn.com/song/a", "Fetching Song...\n\n"),
+        ("https://www.jiosaavn.com/s/playlist/a", "Fetching Playlist...\n\n"),
+        ("temp.musicDLTrackingFile", "Preparing to resume download...\n\n"),
     ],
 )
 def test_cli_url(cli_runner, test_entity, expected):
@@ -89,4 +89,4 @@ def test_cli_url_exception(cli_runner, test_entity):
     result = cli_runner(test_entity)
 
     assert result.exit_code == 3
-    assert result.output == "Invalid entity passed\n"
+    assert result.output == "\nInvalid entity passed\n"

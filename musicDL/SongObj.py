@@ -61,7 +61,7 @@ class SongObj:
 
         tracking_file_path = "musicDL"
 
-        # Extract tracking file name from song,  album title and plylist id
+        # Extract tracking file name from song,  album title and playlist id
         if obj_type == "song":
             song_obj_list = list(raw_json_dict.values())
             tracking_file_path = song_obj_list[0]["song"]

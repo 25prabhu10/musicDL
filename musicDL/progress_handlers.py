@@ -63,7 +63,7 @@ class DisplayManager:
     def __init__(self) -> None:
 
         # Change color system if "legacy" windows terminal
-        # to prevent wrong colors displaying
+        # to prevent wrong colours displaying
         self.isLegacy = detect_legacy_windows()
 
         # dumb_terminals automatically handled by rich.
@@ -212,27 +212,27 @@ class _ProgressTracker:
         self.update("Downloading")
 
     def notify_saavn_download_completion(self) -> None:
-        """Update progresbar to reflect a audio download being completed"""
+        """Update progressbar to reflect a audio download being completed"""
 
         self.progress = 90  # self.progress + 5
         self.update("Converting")
 
     def notify_conversion_completion(self) -> None:
-        """Update progresbar to reflect a audio conversion being completed"""
+        """Update progressbar to reflect a audio conversion being completed"""
 
         self.progress = 95  # self.progress + 5
         self.update("Searching lyrics")
 
     def notify_lyrics_download_completion(self) -> None:
-        """Update progresbar to reflect getting lyrics being completed"""
+        """Update progressbar to reflect getting lyrics being completed"""
 
         self.progress = 99  # self.progress + 5
         self.update("Tagging")
 
     def notify_download_completion(self) -> None:
-        """Update progresbar to reflect a download being completed"""
+        """Update progressbar to reflect a download being completed"""
 
-        # Download completion implie ID# tag embedding was just finished
+        # Download completion implies ID# tag embedding was just finished
         self.progress = 100  # self.progress + 5
         self.update("Done")
 
@@ -262,7 +262,7 @@ class _ProgressTracker:
         delta = self.progress - self.oldProgress
 
         # Update the progress bar
-        # `start_task` called everytime to ensure progress
+        # `start_task` called every time to ensure progress
         # is remove from indeterminate state
         self.parent._richProgressBar.start_task(self.taskID)
         self.parent._richProgressBar.update(
@@ -330,7 +330,7 @@ class DownloadTracker:
             shutil.copy(self.saveFile, backup_file)  # type: ignore
 
     def get_song_list(self) -> list[SongObj]:
-        """Retruns list of SongObj's representing songs yet to be downloaded.
+        """Returns list of SongObj's representing songs yet to be downloaded.
 
         Returns:
             song_obj_list: List of `SongObj`'s yet to be downloaded.
@@ -348,7 +348,7 @@ class DownloadTracker:
                 self.saveFile.unlink()
             return None
 
-        # prepare datadumps pf all SongObj's yet to be downloaded
+        # prepare data-dumps pf all SongObj's yet to be downloaded
         song_data_dump: list[str] = []
 
         for song in self.song_obj_list:

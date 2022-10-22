@@ -36,8 +36,8 @@ def extract(files: list[Path]) -> None:
             fo.write(f"[lang: {lyrics_data['language']}]\n\n")
 
             for line in lyrics_data["lines"]:
-                formated_time = convert_to_milliseconds(line["time"])
-                fo.write(f"[{formated_time}]{line['words'][0]['string']}\n")
+                formatted_time = convert_to_milliseconds(line["time"])
+                fo.write(f"[{formatted_time}]{line['words'][0]['string']}\n")
 
 
 def convert_to_milliseconds(millis):
